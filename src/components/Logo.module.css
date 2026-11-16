@@ -1,0 +1,15 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.word {
+  font-family: var(--font-display);
+  font-weight: 560;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  font-variation-settings: var(--display-axes);
+  white-space: nowrap;
+}
