@@ -1,0 +1,169 @@
+.bar {
+  position: fixed;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px max(10px, var(--safe-right)) max(var(--safe-bottom), 12px)
+    max(10px, var(--safe-left));
+  background: var(--paper2);
+  box-shadow: 0 -10px 22px -16px var(--shadow2);
+}
+
+.edge {
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 100%;
+  height: 6px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--line2);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.logo {
+  display: none;
+}
+
+.tabs {
+  position: relative;
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--ink2);
+  text-decoration: none;
+  border-radius: 14px 17px 0 0 / 12px 13px 0 0;
+}
+
+.tab[aria-current='page'] {
+  z-index: 2;
+  margin-top: -9px;
+  color: var(--ink);
+  background: var(--paper2);
+  box-shadow: 0 -6px 12px -8px var(--shadow2);
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 450;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.tab[aria-current='page'] .label {
+  font-weight: 600;
+}
+
+.underline {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  width: 34px;
+  height: 6px;
+  margin-left: -17px;
+  fill: none;
+  stroke: var(--clay);
+  stroke-width: 2.1;
+  stroke-linecap: round;
+}
+
+.badge {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  margin-left: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px 10px 8px 9px;
+  background: var(--ochre);
+  color: var(--badge-ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+@media (min-width: 1100px) {
+  .bar {
+    position: sticky;
+    top: 0;
+    width: 104px;
+    height: 100dvh;
+    padding: 28px 0 24px;
+    background: var(--paper3);
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .edge {
+    display: none;
+  }
+
+  .logo {
+    align-self: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-icon);
+  }
+
+  .tabs {
+    width: 100%;
+    margin: 0;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tab {
+    min-height: 68px;
+    margin-left: 18px;
+    gap: 6px;
+    border-radius: 16px 0 0 16px / 13px 0 0 13px;
+  }
+
+  .tab[aria-current='page'] {
+    margin-top: 0;
+    margin-left: 10px;
+    background: var(--paper);
+    box-shadow: -4px 2px 10px -6px var(--shadow2);
+  }
+
+  .underline {
+    bottom: 7px;
+    width: 30px;
+    margin-left: -15px;
+  }
+
+  .badge {
+    top: 8px;
+  }
+}

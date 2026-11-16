@@ -1,0 +1,26 @@
+.shell {
+  min-height: 100dvh;
+}
+
+.skip {
+  position: absolute;
+  z-index: 50;
+  top: calc(var(--safe-top) + 8px);
+  left: 8px;
+  padding: 10px 16px;
+  background: var(--paper2);
+  border-radius: var(--radius-chip);
+  box-shadow: 0 6px 14px -8px var(--shadow2);
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+@media (min-width: 1100px) {
+  .shell {
+    display: flex;
+    align-items: flex-start;
+  }
+}
