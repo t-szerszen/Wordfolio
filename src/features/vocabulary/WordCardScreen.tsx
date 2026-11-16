@@ -9,6 +9,7 @@ import { SentenceQuote } from '../../components/SentenceQuote';
 import { StatusSwatch } from '../../components/StatusMark';
 import { useBooks } from '../../hooks/useBooks';
 import { useNow } from '../../hooks/useNow';
+import { useRadioGroup } from '../../hooks/useRadioGroup';
 import { useWords } from '../../hooks/useWords';
 import type { Word, WordStatus } from '../../lib/data/models';
 import { addedLabel, dueLabel } from '../../lib/dates';
@@ -49,6 +50,13 @@ function WordCard({ word }: { word: Word }) {
   const now = useNow();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const book = books.find((b) => b.id === draft.context.bookId);
+  const statusRadio = useRadioGroup(
+    STATUSES.map((s) => s.value),
+    draft.status,
+    (status) => {
+      update({ status, srs: applyStatus(draft.srs, status, Date.now()) });
+    },
+  );
 
   const done = () => {
     flush();
@@ -124,15 +132,8 @@ function WordCard({ word }: { word: Word }) {
               <button
                 key={option.value}
                 type="button"
-                role="radio"
-                aria-checked={draft.status === option.value}
                 className={styles.segment}
-                onClick={() => {
-                  update({
-                    status: option.value,
-                    srs: applyStatus(draft.srs, option.value, Date.now()),
-                  });
-                }}
+                {...statusRadio(option.value)}
               >
                 {option.label}
                 <StatusSwatch status={option.value} />

@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { useRadioGroup } from '../../hooks/useRadioGroup';
 import { useSettings } from '../../hooks/useSettings';
 import { LINE_HEIGHTS, MAX_FONT, MIN_FONT } from '../reader/typography';
 import styles from './ReadingSettings.module.css';
@@ -8,6 +9,16 @@ const TRACK = 'M2 5.4 C 50 3.6, 100 6.6, 150 4.8 S 250 3.8, 298 5.6';
 export function ReadingSettings() {
   const { settings, updateSettings } = useSettings();
   const sizeId = useId();
+  const lineHeight = LINE_HEIGHTS.find(
+    (o) => Math.abs(settings.lineHeight - o.value) < 0.02,
+  )?.value;
+  const radio = useRadioGroup(
+    LINE_HEIGHTS.map((o) => o.value),
+    lineHeight,
+    (value) => {
+      updateSettings({ lineHeight: value });
+    },
+  );
   const percent = Math.round(((settings.fontSize - MIN_FONT) / (MAX_FONT - MIN_FONT)) * 100);
 
   return (
@@ -74,12 +85,8 @@ export function ReadingSettings() {
             <button
               key={option.value}
               type="button"
-              role="radio"
-              aria-checked={Math.abs(settings.lineHeight - option.value) < 0.02}
               className={styles.segment}
-              onClick={() => {
-                updateSettings({ lineHeight: option.value });
-              }}
+              {...radio(option.value)}
             >
               {option.label}
             </button>

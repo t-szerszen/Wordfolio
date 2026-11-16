@@ -1,4 +1,5 @@
 import { Icon } from '../../components/Icon';
+import { useRadioGroup } from '../../hooks/useRadioGroup';
 import { useSettings } from '../../hooks/useSettings';
 import type { ThemeChoice } from '../../lib/data/models';
 import styles from './ThemePicker.module.css';
@@ -11,6 +12,13 @@ const OPTIONS: readonly { value: ThemeChoice; label: string }[] = [
 
 export function ThemePicker() {
   const { settings, updateSettings } = useSettings();
+  const radio = useRadioGroup(
+    OPTIONS.map((o) => o.value),
+    settings.theme,
+    (theme) => {
+      updateSettings({ theme });
+    },
+  );
   return (
     <>
       <div role="radiogroup" aria-label="Motyw" className={styles.options}>
@@ -20,12 +28,8 @@ export function ThemePicker() {
             <button
               key={option.value}
               type="button"
-              role="radio"
-              aria-checked={checked}
               className={styles.option}
-              onClick={() => {
-                updateSettings({ theme: option.value });
-              }}
+              {...radio(option.value)}
             >
               <span aria-hidden="true" className={styles.preview} data-theme-preview={option.value}>
                 <span className={styles.line} style={{ right: 18, top: 16, opacity: 0.75 }} />
