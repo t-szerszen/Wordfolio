@@ -34,7 +34,6 @@ export function WordTile({ word }: { word: Word }) {
       className={styles.tile}
       data-shape={shape}
       style={{ transform: tilt ? `rotate(${tilt}deg)` : undefined }}
-      aria-label={`${word.term}${word.translation ? ` — ${word.translation}` : ''}, ${STATUS_LABELS[word.status]}`}
     >
       {tape && <span aria-hidden="true" className={styles.tape} />}
       <span lang={word.lang} className={styles.term} data-status={word.status}>

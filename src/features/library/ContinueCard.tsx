@@ -19,13 +19,7 @@ export function ContinueCard({ book, available, onMissing }: ContinueCardProps) 
   const started = book.lastOpenedAt !== null;
   const meta = [book.author, languageName(book.lang)].filter(Boolean).join(' · ');
   return (
-    <BookLink
-      bookId={book.id}
-      available={available}
-      label={`${started ? 'Czytaj dalej' : 'Zacznij czytać'}: ${book.title}`}
-      className={styles.card}
-      onMissing={onMissing}
-    >
+    <BookLink bookId={book.id} available={available} className={styles.card} onMissing={onMissing}>
       <span aria-hidden="true" className={styles.ribbon} />
       <BookCover book={book} variant="cover" width={width} height={height} />
       <span className={styles.body}>

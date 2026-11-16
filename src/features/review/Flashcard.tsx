@@ -23,7 +23,6 @@ export function Flashcard({ word, flipped, onFlip }: FlashcardProps) {
         <button
           type="button"
           className={`${styles.face} ${styles.front}`}
-          aria-label={`Odwróć fiszkę: ${word.term}`}
           aria-hidden={flipped}
           tabIndex={flipped ? -1 : 0}
           onClick={onFlip}
@@ -48,7 +47,6 @@ export function Flashcard({ word, flipped, onFlip }: FlashcardProps) {
         <button
           type="button"
           className={`${styles.face} ${styles.back}`}
-          aria-label="Odwróć z powrotem"
           aria-hidden={!flipped}
           tabIndex={flipped ? 0 : -1}
           onClick={onFlip}

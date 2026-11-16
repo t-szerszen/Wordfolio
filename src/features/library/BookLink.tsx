@@ -4,24 +4,16 @@ import { Link } from 'react-router';
 type BookLinkProps = {
   bookId: string;
   available: boolean;
-  label: string;
   className?: string;
   onMissing: (bookId: string) => void;
   children: ReactNode;
 };
 
 /** Książka z plikiem otwiera czytnik; bez pliku — prośbę o ponowne wgranie. */
-export function BookLink({
-  bookId,
-  available,
-  label,
-  className,
-  onMissing,
-  children,
-}: BookLinkProps) {
+export function BookLink({ bookId, available, className, onMissing, children }: BookLinkProps) {
   if (available) {
     return (
-      <Link to={`/czytaj/${bookId}`} className={className} aria-label={label}>
+      <Link to={`/czytaj/${bookId}`} className={className}>
         {children}
       </Link>
     );
@@ -30,12 +22,12 @@ export function BookLink({
     <button
       type="button"
       className={className}
-      aria-label={`${label} — plik niedostępny na tym urządzeniu`}
       onClick={() => {
         onMissing(bookId);
       }}
     >
       {children}
+      <span className="visually-hidden"> — plik niedostępny na tym urządzeniu</span>
     </button>
   );
 }

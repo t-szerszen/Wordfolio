@@ -60,11 +60,7 @@ export function VocabularyScreen() {
         <button
           type="button"
           className={styles.sort}
-          aria-label={
-            sort === 'az'
-              ? 'Sortowanie: alfabetycznie. Zmień na ostatnio dodane'
-              : 'Sortowanie: ostatnio dodane. Zmień na alfabetycznie'
-          }
+          aria-label={`Sortuj: ${sort === 'az' ? 'A–Z' : 'Ostatnie'} (zmień na ${sort === 'az' ? 'ostatnio dodane' : 'alfabetyczne'})`}
           onClick={() => {
             setSort(sort === 'az' ? 'recent' : 'az');
           }}

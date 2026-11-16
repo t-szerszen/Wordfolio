@@ -129,7 +129,6 @@ export function Bookshelf({ books, totalCount, isAvailable, onAdd, onMissing }: 
                       <BookLink
                         bookId={book.id}
                         available={available}
-                        label={book.author ? `${book.title}, ${book.author}` : book.title}
                         className={styles.bookLink}
                         onMissing={onMissing}
                       >
