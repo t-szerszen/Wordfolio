@@ -10,7 +10,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rolldownOptions: {
       output: {
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             { name: 'firestore', test: /node_modules[\\/]@firebase[\\/](firestore|webchannel)/ },
             { name: 'firebase', test: /node_modules[\\/](@firebase|firebase)[\\/]/ },
