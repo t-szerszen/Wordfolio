@@ -1,5 +1,6 @@
 import type { Word } from '../../lib/data/models';
 import { dayDiff } from '../../lib/dates';
+import { dueWords } from '../../lib/srs/due';
 import { isDue, MINUTE, review, statusFor } from '../../lib/srs/scheduler';
 import type { Grade } from '../../lib/srs/types';
 
@@ -15,10 +16,6 @@ export type Session = {
 };
 
 const EMPTY_TALLY: Record<Grade, number> = { again: 0, hard: 0, good: 0, easy: 0 };
-
-export function dueWords(words: readonly Word[], now: number): Word[] {
-  return words.filter((w) => isDue(w.srs, now)).sort((a, b) => a.srs.due - b.srs.due);
-}
 
 export function startSession(words: readonly Word[], now: number): Session {
   const queue = dueWords(words, now).map((w) => w.id);

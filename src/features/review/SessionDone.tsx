@@ -3,7 +3,7 @@ import { Icon } from '../../components/Icon';
 import { countLabel } from '../../lib/plural';
 import type { Streak } from '../../lib/streak';
 import { GRADES } from './grades';
-import type { Forecast, Session } from './session';
+import { EXTRA_CARDS, type Forecast, type Session } from './session';
 import styles from './SessionDone.module.css';
 
 type SessionDoneProps = {
@@ -81,7 +81,7 @@ export function SessionDone({ session, forecast, streak, canStudyMore, onMore }:
         </Link>
         {canStudyMore && (
           <button type="button" className={styles.more} onClick={onMore}>
-            Jeszcze 5 kart
+            Jeszcze {countLabel(EXTRA_CARDS, 'karta', 'karty', 'kart')}
           </button>
         )}
       </div>

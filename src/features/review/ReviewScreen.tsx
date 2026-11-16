@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { Icon } from '../../components/Icon';
 import { Screen } from '../../components/Screen';
@@ -22,6 +22,14 @@ export function ReviewScreen() {
   const now = useNow();
   const [started, setStarted] = useState<Session | null>(null);
   const [flipped, setFlipped] = useState(false);
+  const sessionRef = useRef<HTMLDivElement>(null);
+  // Po odsłonięciu i po ocenie znika przycisk, który miał fokus — przenosimy go w sensowne miejsce.
+  const focusNext = useRef<'answers' | 'reveal' | null>(null);
+
+  const flip = (next: boolean) => {
+    focusNext.current = next ? 'answers' : 'reveal';
+    setFlipped(next);
+  };
 
   // Sesja „zamraża” kolejkę dopiero przy pierwszej odpowiedzi; wcześniej wynika z bieżących słówek.
   const session = started ?? (loading ? null : startSession(words, now));
@@ -35,14 +43,26 @@ export function ReviewScreen() {
     const result = answer({ ...session, queue }, current, value, Date.now());
     saveWord(result.word);
     setStarted(result.session);
-    setFlipped(false);
+    flip(false);
     if (!settings.reviewDays.includes(today)) addReviewDay(today);
   };
+
+  useEffect(() => {
+    const target = focusNext.current;
+    focusNext.current = null;
+    if (!target) return;
+    const selector = target === 'answers' ? '[data-answers] button' : '[data-reveal]';
+    sessionRef.current?.querySelector<HTMLElement>(selector)?.focus();
+  });
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (
         !current ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.repeat ||
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
       ) {
@@ -81,13 +101,13 @@ export function ReviewScreen() {
       <SessionProgress done={done} total={total} />
 
       {!loading && current && (
-        <div className={styles.session}>
+        <div ref={sessionRef} className={styles.session}>
           <Flashcard
             key={current.id}
             word={current}
             flipped={flipped}
             onFlip={() => {
-              setFlipped(!flipped);
+              flip(!flipped);
             }}
           />
           {flipped ? (
@@ -96,8 +116,9 @@ export function ReviewScreen() {
             <button
               type="button"
               className={styles.reveal}
+              data-reveal
               onClick={() => {
-                setFlipped(true);
+                flip(true);
               }}
             >
               <Icon name="review" size={22} accent />
@@ -122,7 +143,7 @@ export function ReviewScreen() {
           canStudyMore={startExtraSession(words, now).queue.length > 0}
           onMore={() => {
             setStarted(startExtraSession(words, Date.now()));
-            setFlipped(false);
+            flip(false);
           }}
         />
       )}

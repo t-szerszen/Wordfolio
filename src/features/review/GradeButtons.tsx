@@ -10,7 +10,7 @@ type GradeButtonsProps = {
 
 export function GradeButtons({ intervals, onGrade }: GradeButtonsProps) {
   return (
-    <div role="group" aria-label="Jak dobrze pamiętasz?" className={styles.grid}>
+    <div role="group" aria-label="Jak dobrze pamiętasz?" className={styles.grid} data-answers>
       {GRADES.map(({ grade, label, color }, i) => (
         <button
           key={grade}
