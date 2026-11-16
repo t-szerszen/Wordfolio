@@ -1,4 +1,6 @@
-export type ThemeChoice = 'papier' | 'lampka' | 'system';
+import type { ThemeChoice } from '../../lib/data/models';
+
+export type { ThemeChoice };
 export type ResolvedTheme = 'papier' | 'lampka';
 
 const STORAGE_KEY = 'wordfolio:theme';

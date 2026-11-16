@@ -1,26 +1,27 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
-import { ShelfScreen } from '../features/library/ShelfScreen';
-import { ReviewScreen } from '../features/review/ReviewScreen';
-import { SettingsScreen } from '../features/settings/SettingsScreen';
+import { AuthProvider } from '../features/auth/AuthProvider';
+import { LoginScreen } from '../features/auth/LoginScreen';
+import { useAuth } from '../features/auth/useAuth';
 import { applyTheme, readCachedTheme } from '../features/settings/theme';
-import { VocabularyScreen } from '../features/vocabulary/VocabularyScreen';
-import { AppShell } from './AppShell';
+import type { Backend } from './backend';
+import { ConfigMissingScreen } from './ConfigMissingScreen';
+import type { BackendResult } from './resolveBackend';
+import { SignedInApp } from './SignedInApp';
 
-export function App() {
+function AuthGate({ backend }: { backend: Backend }) {
+  const { state } = useAuth();
+  if (state.status === 'loading') return null;
+  if (state.status === 'signed-out') return <LoginScreen />;
+  return <SignedInApp key={state.user.uid} backend={backend} uid={state.user.uid} />;
+}
+
+export function App({ result }: { result: BackendResult }) {
   useEffect(() => applyTheme(readCachedTheme()), []);
 
+  if ('missing' in result) return <ConfigMissingScreen missing={result.missing} />;
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <Routes>
-        <Route element={<AppShell dueCount={0} />}>
-          <Route index element={<ShelfScreen />} />
-          <Route path="slownik" element={<VocabularyScreen />} />
-          <Route path="powtorki" element={<ReviewScreen />} />
-          <Route path="ustawienia" element={<SettingsScreen />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider auth={result.backend.auth}>
+      <AuthGate backend={result.backend} />
+    </AuthProvider>
   );
 }
