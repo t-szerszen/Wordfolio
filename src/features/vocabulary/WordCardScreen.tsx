@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router';
 import { Button } from '../../components/Button';
 import { Dialog } from '../../components/Dialog';
 import { Icon } from '../../components/Icon';
@@ -24,11 +24,19 @@ const STATUSES: readonly { value: WordStatus; label: string }[] = [
   { value: 'known', label: 'Znane' },
 ];
 
+/** Słówko przekazane z czytnika przy otwieraniu karty — zanim dotrze migawka z Firestore. */
+function wordFromState(state: unknown, id: string): Word | undefined {
+  if (typeof state !== 'object' || state === null || !('word' in state)) return undefined;
+  const word = (state as { word: Word }).word;
+  return word.id === id ? word : undefined;
+}
+
 export function WordCardScreen() {
   const { wordId = '' } = useParams();
+  const state: unknown = useLocation().state;
   const { words, loading } = useWords();
   if (loading) return null;
-  const word = words.find((w) => w.id === wordId);
+  const word = words.find((w) => w.id === wordId) ?? wordFromState(state, wordId);
   if (!word) return <Navigate to="/slownik" replace />;
   return <WordCard key={word.id} word={word} />;
 }

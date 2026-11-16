@@ -1,53 +1,65 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useWords } from '../../hooks/useWords';
 import type { Word } from '../../lib/data/models';
 
 const SAVE_DELAY = 600;
 
+type EditablePatch = Partial<
+  Pick<Word, 'translation' | 'definition' | 'note' | 'tags' | 'status' | 'srs'>
+>;
+
 /**
- * Edycja karty na lokalnej kopii z opóźnionym zapisem całego dokumentu.
- * Zmiany z innych urządzeń w trakcie edycji nie nadpisują tego, co właśnie piszesz.
+ * Edycja karty trzyma tylko zmienione pola i przy zapisie nakłada je na najnowszą wersję słówka
+ * z synchronizacji — powtórka zrobiona w tym czasie na innym urządzeniu nie zostanie cofnięta.
  */
 export function useWordDraft(word: Word) {
-  const { saveWord } = useWords();
-  const [draft, setDraft] = useState(word);
-  const pending = useRef<Word | null>(null);
+  const { words, saveWord } = useWords();
+  const [patch, setPatch] = useState<EditablePatch>({});
+  const dirty = useRef(false);
+  const latest = useRef({ word, patch, words, saveWord });
+  useEffect(() => {
+    latest.current = { word, patch, words, saveWord };
+  });
+
+  const flush = useCallback(() => {
+    const current = latest.current;
+    // Słówko usunięte w międzyczasie (np. na innym urządzeniu) nie może wrócić przez zaległy zapis.
+    if (!dirty.current || !current.words.some((w) => w.id === current.word.id)) return;
+    dirty.current = false;
+    current.saveWord({ ...current.word, ...current.patch });
+  }, []);
 
   useEffect(() => {
-    if (!pending.current) return;
-    const timer = window.setTimeout(() => {
-      if (pending.current) saveWord(pending.current);
-      pending.current = null;
-    }, SAVE_DELAY);
+    if (!dirty.current) return;
+    const timer = window.setTimeout(flush, SAVE_DELAY);
     return () => {
       window.clearTimeout(timer);
     };
-  }, [draft, saveWord]);
+  }, [patch, flush]);
 
-  useEffect(
-    () => () => {
-      if (pending.current) saveWord(pending.current);
-    },
-    [saveWord],
-  );
+  useEffect(() => {
+    // Zamknięcie karty, przełączenie aplikacji albo zamknięcie PWA nie mogą zgubić ostatniej zmiany.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onHide);
+      flush();
+    };
+  }, [flush]);
 
-  const update = (patch: Partial<Word>) => {
-    setDraft((current) => {
-      const next = { ...current, ...patch };
-      pending.current = next;
-      return next;
-    });
+  const update = (next: EditablePatch) => {
+    dirty.current = true;
+    setPatch((current) => ({ ...current, ...next }));
   };
 
-  const flush = () => {
-    if (pending.current) saveWord(pending.current);
-    pending.current = null;
-  };
-
-  /** Przy usuwaniu karty nie wolno dosłać zaległej edycji — wskrzesiłaby słówko. */
+  /** Przy usuwaniu karty nie wolno dosłać zaległej edycji. */
   const discard = () => {
-    pending.current = null;
+    dirty.current = false;
   };
 
-  return { draft, update, flush, discard };
+  return { draft: { ...word, ...patch }, update, flush, discard };
 }
