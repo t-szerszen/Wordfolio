@@ -1,0 +1,63 @@
+.button {
+  flex: 1;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1.5px solid var(--clay);
+  background: var(--clay);
+  color: var(--on-clay);
+  border-radius: var(--radius-btn);
+  box-shadow: 0 8px 16px -10px var(--shadow2);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.button[data-saved] {
+  background: var(--paper);
+  color: var(--clay);
+  box-shadow: none;
+}
+
+.button[data-compact] {
+  min-height: 46px;
+  font-size: 16px;
+}
+
+.button:disabled {
+  cursor: default;
+}
+
+.star {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+}
+
+.outline,
+.fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.outline {
+  fill: none;
+}
+
+.fill {
+  fill: currentColor;
+  clip-path: circle(0% at 50% 88%);
+  transition: clip-path 380ms ease-out;
+}
+
+.button[data-saved] .fill {
+  clip-path: circle(80% at 50% 88%);
+}

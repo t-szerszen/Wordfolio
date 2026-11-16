@@ -1,4 +1,4 @@
-const MAX_LENGTH = 320;
+const MAX_LENGTH = 180;
 const segmenters = new Map<string, Intl.Segmenter>();
 
 function segmenter(lang: string): Intl.Segmenter {

@@ -3,3 +3,24 @@
   line-height: var(--reader-leading);
   touch-action: pan-y;
 }
+
+.row {
+  display: grid;
+  grid-template-columns: var(--reader-measure) minmax(0, 1fr);
+  column-gap: 40px;
+  align-items: start;
+}
+
+.margin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+@media (min-width: 1100px) {
+  .row {
+    column-gap: 56px;
+  }
+}

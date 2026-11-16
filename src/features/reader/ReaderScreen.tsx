@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useParams } from 'react-router';
 import { Button } from '../../components/Button';
 import { TabBar } from '../../components/TabBar';
@@ -6,10 +6,11 @@ import { useBooks } from '../../hooks/useBooks';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { useDueWords } from '../../hooks/useDueWords';
 import { useSettings } from '../../hooks/useSettings';
-import { useWordStatuses } from '../../hooks/useWordStatuses';
+import { useWordIndex } from '../../hooks/useWordIndex';
 import type { Book } from '../../lib/data/models';
 import type { PDFDocumentProxy } from '../../lib/pdf/document';
 import type { Chapter } from '../../lib/pdf/outline';
+import { tokenize } from '../../lib/text/tokenize';
 import { useImportBook } from '../library/useImportBook';
 import { chapterAt, positionLabel } from './chapters';
 import { PageNav } from './PageNav';
@@ -23,6 +24,9 @@ import { MARGIN_SIDE, MEASURE_DESKTOP, MEASURE_TABLET } from './typography';
 import { useBookDocument } from './useBookDocument';
 import { usePage } from './usePage';
 import { useReadingPosition } from './useReadingPosition';
+import { useSelectedWord } from './useSelectedWord';
+import { WordDetails } from './WordDetails';
+import { WordNote, WordSheet } from './WordSheet';
 import styles from './ReaderScreen.module.css';
 
 export function ReaderScreen() {
@@ -123,13 +127,20 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
   const { settings } = useSettings();
   const { saveBook } = useBooks();
   const breakpoint = useBreakpoint();
-  const statuses = useWordStatuses(book.lang);
+  const words = useWordIndex(book.lang);
   const dueCount = useDueWords().length;
   const pageState = usePage(doc, book.id, page);
   const scrollRef = useRef<HTMLDivElement>(null);
   useReadingPosition(book, page);
 
+  const paragraphs = pageState.status === 'ready' ? pageState.paragraphs : null;
+  const tokens = useMemo(
+    () => (paragraphs ?? []).map((p) => tokenize(p.text, book.lang)),
+    [paragraphs, book.lang],
+  );
+  const selected = useSelectedWord(book, page, paragraphs, tokens, selection);
   const desktop = breakpoint === 'desktop';
+  const wide = breakpoint !== 'phone';
   const chapter = chapterAt(chapters, page);
   const showChrome = desktop || chrome || panelOpen;
   const bookmarked = book.bookmarks.includes(page);
@@ -160,6 +171,23 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
     };
   }, [goTo, page]);
 
+  useEffect(() => {
+    if (!selection || wide) return;
+    const word = scrollRef.current?.querySelector(
+      `[data-paragraph="${selection.paragraph}"] [data-token="${selection.start}"]`,
+    );
+    const scroller = scrollRef.current;
+    if (!word || !scroller) return;
+    const top = word.getBoundingClientRect().top;
+    // Arkusz zajmuje dolną część ekranu — słowo przesuwamy do górnej części, żeby było widać kontekst.
+    if (top > window.innerHeight * 0.35)
+      scroller.scrollBy({ top: top - window.innerHeight * 0.22, behavior: 'smooth' });
+  }, [selection, wide]);
+
+  const closeSelection = useCallback(() => {
+    setSelection(null);
+  }, []);
+
   const closePanel = useCallback(() => {
     setPanelOpen(false);
   }, []);
@@ -176,6 +204,7 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
       className={styles.reader}
       style={style}
       data-chrome={showChrome || undefined}
+      data-sheet={(!wide && selection !== null) || undefined}
       data-hide-saved={settings.showSavedWords ? undefined : true}
     >
       {showChrome ? (
@@ -220,9 +249,24 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
           {pageState.status === 'ready' && pageState.paragraphs.length > 0 && (
             <ReaderPage
               paragraphs={pageState.paragraphs}
+              tokens={tokens}
               lang={book.lang}
-              statuses={statuses}
+              words={words}
               selection={selection}
+              wide={wide}
+              activeNote={
+                selected && (
+                  <WordNote>
+                    <WordDetails
+                      word={selected}
+                      lang={book.lang}
+                      page={page}
+                      variant="note"
+                      onClose={closeSelection}
+                    />
+                  </WordNote>
+                )
+              }
               handlers={{
                 onWord: (target) => {
                   setPanelOpen(false);
@@ -258,6 +302,17 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
         <ReaderFooter chapter={chapter?.number ?? null} page={page} pageCount={pageCount} />
       )}
       {panelOpen && <TypographyPanel onClose={closePanel} />}
+      {!wide && selected && (
+        <WordSheet>
+          <WordDetails
+            word={selected}
+            lang={book.lang}
+            page={page}
+            variant="sheet"
+            onClose={closeSelection}
+          />
+        </WordSheet>
+      )}
       {showChrome && !desktop && !selection && <TabBar dueCount={dueCount} />}
     </div>
   );

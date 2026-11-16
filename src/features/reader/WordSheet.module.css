@@ -1,0 +1,67 @@
+.sheet {
+  position: absolute;
+  z-index: 7;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 72dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px max(22px, var(--safe-right)) calc(var(--safe-bottom) + 24px)
+    max(22px, var(--safe-left));
+  background: var(--paper2);
+  border-radius: var(--radius-sheet);
+  box-shadow:
+    0 -16px 36px -18px var(--shadow2),
+    inset 0 1px 0 var(--line);
+  animation: rise 300ms var(--ease-out-soft);
+}
+
+.grip {
+  align-self: center;
+  margin-bottom: 2px;
+  fill: none;
+  stroke: var(--line2);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.note {
+  position: relative;
+  padding: 16px 16px 14px;
+  background: var(--paper2);
+  border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
+  box-shadow:
+    0 16px 30px -18px var(--shadow2),
+    inset 0 0 0 1px var(--line);
+  transform: rotate(0.5deg);
+}
+
+.tape {
+  position: absolute;
+  top: -9px;
+  left: 22px;
+  width: 54px;
+  height: 17px;
+  background: var(--rose);
+  opacity: 0.5;
+  transform: rotate(-4deg);
+  border-radius: 1px;
+}
+
+@media (min-width: 1100px) {
+  .note {
+    background: var(--paper);
+  }
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}

@@ -1,21 +1,16 @@
 import { memo, type ReactNode } from 'react';
-import type { WordStatus } from '../../lib/data/models';
+import type { Word } from '../../lib/data/models';
+import { STATUS_LABELS } from '../../lib/data/statusLabels';
 import { normalizeTerm, type Token } from '../../lib/text/tokenize';
 import styles from './ReaderParagraph.module.css';
 
-const STATUS_LABEL: Record<WordStatus, string> = {
-  new: 'nowe',
-  learning: 'w nauce',
-  known: 'znane',
-};
-
 type ReaderParagraphProps = {
-  index: number;
+  paragraph: number;
   tokens: readonly Token[];
   heading: boolean;
   dropCap: boolean;
   lang: string;
-  statuses: ReadonlyMap<string, WordStatus> | null;
+  words: ReadonlyMap<string, Word>;
   /** Zaznaczony zakres tokenów w tym akapicie. */
   selected: { start: number; end: number } | null;
   /** Token, który ma tabindex=0 (wędrujący fokus). */
@@ -23,12 +18,12 @@ type ReaderParagraphProps = {
 };
 
 export const ReaderParagraph = memo(function ReaderParagraph({
-  index,
+  paragraph,
   tokens,
   heading,
   dropCap,
   lang,
-  statuses,
+  words,
   selected,
   focusToken,
 }: ReaderParagraphProps) {
@@ -43,7 +38,7 @@ export const ReaderParagraph = memo(function ReaderParagraph({
         token.text
       );
     }
-    const status = statuses?.get(normalizeTerm(token.text, lang));
+    const status = words.get(normalizeTerm(token.text, lang))?.status;
     return (
       <span
         key={i}
@@ -51,7 +46,7 @@ export const ReaderParagraph = memo(function ReaderParagraph({
         tabIndex={focusToken === i ? 0 : -1}
         aria-haspopup="dialog"
         aria-pressed={inRange}
-        aria-label={status ? `${token.text} — ${STATUS_LABEL[status]}` : undefined}
+        aria-label={status ? `${token.text} — ${STATUS_LABELS[status]}` : undefined}
         className={styles.word}
         data-token={i}
         data-status={status}
@@ -71,7 +66,7 @@ export const ReaderParagraph = memo(function ReaderParagraph({
   return (
     <p
       className={heading ? styles.heading : styles.paragraph}
-      data-paragraph={index}
+      data-paragraph={paragraph}
       data-drop-cap={dropCap || undefined}
     >
       {children}

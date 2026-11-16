@@ -28,7 +28,7 @@ describe('sentenceAround', () => {
     const long = `${'word '.repeat(200)}target ${'tail '.repeat(200)}end.`;
     const start = long.indexOf('target');
     const context = sentenceAround(long, start, start + 6, 'en');
-    expect(sentenceText(context).length).toBeLessThan(340);
+    expect(sentenceText(context).length).toBeLessThan(200);
     expect(context.before.startsWith('…')).toBe(true);
     expect(context.after.endsWith('…')).toBe(true);
     expect(context.match).toBe('target');

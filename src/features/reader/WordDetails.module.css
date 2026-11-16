@@ -1,0 +1,166 @@
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.headword {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 10px;
+}
+
+.term {
+  font-family: var(--font-display);
+  font-weight: 560;
+  font-size: 31px;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  font-variation-settings: var(--display-axes);
+  overflow-wrap: anywhere;
+}
+
+.details[data-variant='note'] .term {
+  font-size: 24px;
+}
+
+.ipa {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink3);
+}
+
+.close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink2);
+  border-radius: var(--radius-icon);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.translation {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.28;
+}
+
+.details[data-variant='note'] .translation {
+  font-size: 18px;
+}
+
+.definition {
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+.retry {
+  min-height: 44px;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--clay);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.context {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rose);
+}
+
+.source {
+  font-family: var(--font-hand);
+  font-size: 19px;
+  line-height: 1;
+  color: var(--clay);
+}
+
+.sentence {
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.mark {
+  padding: 0 2px;
+  font-style: normal;
+  font-weight: 600;
+  background-image: linear-gradient(
+    100deg,
+    rgba(0, 0, 0, 0) 1%,
+    var(--mark) 4%,
+    var(--mark) 96%,
+    rgba(0, 0, 0, 0) 99%
+  );
+  background-repeat: no-repeat;
+  background-position: 0 80%;
+  background-size: 100% 64%;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.card {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: var(--paper3);
+  color: var(--ink2);
+  border-radius: 16px 13px 17px 14px;
+}
+
+.details[data-variant='note'] .card {
+  width: 46px;
+  height: 46px;
+}
+
+.hint {
+  align-self: center;
+  font-family: var(--font-hand);
+  font-size: 18px;
+  color: var(--ink3);
+}

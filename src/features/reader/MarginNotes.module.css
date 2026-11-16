@@ -1,0 +1,35 @@
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.note {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 1.15;
+  color: var(--ink2);
+  transform-origin: left center;
+}
+
+.term {
+  color: var(--ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.term[data-status='new'] {
+  text-decoration-style: wavy;
+  text-decoration-color: var(--clay);
+}
+
+.term[data-status='learning'] {
+  text-decoration-style: wavy;
+  text-decoration-color: var(--ochre);
+}
+
+.term[data-status='known'] {
+  text-decoration-color: var(--sage);
+}

@@ -26,6 +26,10 @@
   padding-bottom: calc(var(--tab-bar-height) + var(--safe-bottom) + 40px);
 }
 
+.reader[data-sheet] .page {
+  padding-bottom: 70dvh;
+}
+
 .runningHead {
   position: absolute;
   z-index: 2;
@@ -69,7 +73,7 @@
 
 @media (min-width: 720px) {
   .page {
-    max-width: calc(var(--reader-measure) + 80px);
+    max-width: 1000px;
     margin: 0 auto;
     padding: calc(var(--safe-top) + 72px) 40px calc(var(--safe-bottom) + 130px);
   }
@@ -87,7 +91,7 @@
   .page,
   .reader[data-chrome] .page {
     position: relative;
-    max-width: calc(var(--reader-measure) + 128px);
+    max-width: 1140px;
     margin: 40px auto 56px;
     padding: 48px 64px 40px;
     background: var(--paper2);
