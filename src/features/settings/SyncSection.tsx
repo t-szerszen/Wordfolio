@@ -30,6 +30,7 @@ export function SyncSection() {
   const { books } = useBooks();
   const now = useNow(30_000);
   const [busy, setBusy] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
   const counts = `${countLabel(words.length, 'słówko', 'słówka', 'słówek')}, ${countLabel(books.length, 'książka', 'książki', 'książek')}`;
   const detail =
     state === 'offline'
@@ -48,6 +49,11 @@ export function SyncSection() {
         </span>
       </div>
       {error && <p className={styles.error}>{error}</p>}
+      {timedOut && (
+        <p className={styles.error}>
+          Serwer nie odpowiada — zmiany wyślą się same, gdy połączenie wróci.
+        </p>
+      )}
       <Button
         variant="soft"
         size="medium"
@@ -55,9 +61,14 @@ export function SyncSection() {
         disabled={state === 'offline' || busy}
         onClick={() => {
           setBusy(true);
-          void syncNow().finally(() => {
-            setBusy(false);
-          });
+          setTimedOut(false);
+          syncNow()
+            .catch(() => {
+              setTimedOut(true);
+            })
+            .finally(() => {
+              setBusy(false);
+            });
         }}
       >
         {busy ? 'Synchronizuję…' : 'Synchronizuj teraz'}
