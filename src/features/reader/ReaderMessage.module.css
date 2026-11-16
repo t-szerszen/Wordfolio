@@ -1,0 +1,35 @@
+.message {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: calc(var(--safe-top) + 120px) 24px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 560;
+  font-size: 26px;
+  line-height: 1.15;
+  font-variation-settings: var(--display-axes);
+}
+
+.text {
+  font-size: 16.5px;
+  line-height: 1.55;
+  color: var(--ink2);
+}
+
+.back {
+  align-self: center;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line2);
+  text-underline-offset: 6px;
+}

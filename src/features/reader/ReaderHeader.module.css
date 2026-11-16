@@ -1,0 +1,79 @@
+.header {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: calc(var(--safe-top) + 6px) max(8px, var(--safe-right)) 6px max(8px, var(--safe-left));
+  background: var(--paper);
+}
+
+.titles {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 4px;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.position {
+  font-family: var(--font-hand);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--ink3);
+}
+
+.iconButton {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  border-radius: var(--radius-icon);
+}
+
+.iconButton[data-active] {
+  background: var(--paper3);
+}
+
+.ribbon {
+  color: var(--clay);
+}
+
+.rule {
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 6px;
+  fill: none;
+  stroke: var(--line2);
+  stroke-width: 1.2;
+}
+
+@media (min-width: 720px) {
+  .header {
+    padding: calc(var(--safe-top) + 14px) 20px 10px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .header {
+    padding: 18px 32px 14px;
+    background: var(--paper3);
+  }
+}

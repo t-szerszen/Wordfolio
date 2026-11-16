@@ -1,0 +1,40 @@
+.footer {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  height: calc(84px + var(--safe-bottom));
+  padding: 0 var(--reader-side) calc(var(--safe-bottom) + 24px);
+  background: linear-gradient(0deg, var(--reader-bg) 62%, rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+
+.chapter {
+  font-family: var(--font-hand);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+.progress {
+  flex: 1;
+}
+
+.page {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 720px) {
+  .footer {
+    height: calc(96px + var(--safe-bottom));
+    padding: 0 40px calc(var(--safe-bottom) + 34px);
+  }
+}

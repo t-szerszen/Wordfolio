@@ -1,0 +1,34 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.number {
+  font-size: 13.5px;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+
+.button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: var(--paper2);
+  color: var(--ink2);
+  border-radius: 16px 13px 17px 14px;
+  box-shadow: 0 6px 14px -8px var(--shadow2);
+}
+
+.button:last-child {
+  border-radius: 13px 16px 14px 17px;
+}
+
+.button:disabled {
+  opacity: 0.35;
+}

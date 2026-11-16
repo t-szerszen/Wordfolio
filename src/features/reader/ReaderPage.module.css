@@ -1,0 +1,5 @@
+.text {
+  font-size: var(--reader-size);
+  line-height: var(--reader-leading);
+  touch-action: pan-y;
+}
