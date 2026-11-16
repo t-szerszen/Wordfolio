@@ -128,11 +128,14 @@ export function createMemoryBackend(): Backend {
       signOut: () => setUser(false),
       completeRedirect: () => Promise.resolve(null),
     },
-    repositories: (uid) => ({
-      books: collectionStore<Book>(storageKey(uid, 'books')),
-      words: collectionStore<Word>(storageKey(uid, 'words')),
-      settings: settingsStore(storageKey(uid, 'settings')),
-    }),
-    syncNow: () => Promise.resolve(),
+    loadData: () =>
+      Promise.resolve({
+        repositories: (uid: string) => ({
+          books: collectionStore<Book>(storageKey(uid, 'books')),
+          words: collectionStore<Word>(storageKey(uid, 'words')),
+          settings: settingsStore(storageKey(uid, 'settings')),
+        }),
+        syncNow: () => Promise.resolve(),
+      }),
   };
 }

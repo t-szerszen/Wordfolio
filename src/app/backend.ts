@@ -1,9 +1,4 @@
 import type { FirebaseOptions } from 'firebase/app';
-import type {
-  BooksRepository,
-  SettingsRepository,
-  WordsRepository,
-} from '../lib/data/repositories';
 import {
   completeRedirect,
   signInWithGoogle,
@@ -11,18 +6,13 @@ import {
   watchAuth,
   type AuthUser,
 } from '../lib/firebase/auth';
-import { firestoreBooks, firestoreSettings, firestoreWords } from '../lib/firebase/repositories';
+import type { DataBackend } from '../lib/firebase/dataBackend';
 import { initFirebase } from '../lib/firebase/services';
-import { syncNow } from '../lib/firebase/sync';
 
-export type Repositories = {
-  books: BooksRepository;
-  words: WordsRepository;
-  settings: SettingsRepository;
-};
+export type { DataBackend, Repositories } from '../lib/firebase/dataBackend';
 
 export type AuthBackend = {
-  watch(onChange: (user: AuthUser | null) => void): () => void;
+  watch: (onChange: (user: AuthUser | null) => void) => () => void;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   completeRedirect: () => Promise<unknown>;
@@ -31,12 +21,12 @@ export type AuthBackend = {
 /** Jedyne miejsce, które łączy Firebase z resztą aplikacji. */
 export type Backend = {
   auth: AuthBackend;
-  repositories: (uid: string) => Repositories;
-  syncNow: () => Promise<void>;
+  loadData: () => Promise<DataBackend>;
 };
 
 export function createFirebaseBackend(options: FirebaseOptions): Backend {
-  const { auth, db } = initFirebase(options);
+  const { app, auth } = initFirebase(options);
+  let data: Promise<DataBackend> | null = null;
   return {
     auth: {
       watch: (onChange) => watchAuth(auth, onChange),
@@ -44,11 +34,9 @@ export function createFirebaseBackend(options: FirebaseOptions): Backend {
       signOut: () => signOutUser(auth),
       completeRedirect: () => completeRedirect(auth),
     },
-    repositories: (uid) => ({
-      books: firestoreBooks(db, uid),
-      words: firestoreWords(db, uid),
-      settings: firestoreSettings(db, uid),
-    }),
-    syncNow: () => syncNow(db),
+    loadData: () => {
+      data ??= import('../lib/firebase/dataBackend').then((m) => m.createDataBackend(app));
+      return data;
+    },
   };
 }

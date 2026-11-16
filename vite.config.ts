@@ -78,8 +78,6 @@ export default defineConfig({
       output: {
         codeSplitting: {
           groups: [
-            { name: 'firestore', test: /node_modules[\\/]@firebase[\\/](firestore|webchannel)/ },
-            { name: 'firebase', test: /node_modules[\\/](@firebase|firebase)[\\/]/ },
             {
               name: 'react',
               test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
