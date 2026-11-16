@@ -1,0 +1,69 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  font-family: var(--font-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 120ms ease-out,
+    background-color 200ms ease-out;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  opacity: 0.6;
+}
+
+.large {
+  min-height: 54px;
+  padding: 0 22px;
+  font-size: 18px;
+}
+
+.medium {
+  min-height: 46px;
+  padding: 0 16px;
+  font-size: 15px;
+  font-weight: 450;
+  gap: 8px;
+}
+
+.primary {
+  background: var(--clay);
+  color: var(--on-clay);
+  border-radius: var(--radius-btn);
+  box-shadow: 0 10px 18px -12px var(--shadow2);
+}
+
+.outline {
+  background: var(--paper2);
+  color: var(--ink);
+  border: 1.5px solid var(--ink2);
+  border-radius: 15px 19px 14px 18px / 17px 14px 18px 15px;
+}
+
+.soft {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.25px solid var(--line2);
+  border-radius: 14px 17px 13px 16px;
+}
+
+.link {
+  min-height: 44px;
+  padding: 0 4px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 450;
+  text-decoration: underline;
+  text-decoration-color: var(--line2);
+  text-decoration-thickness: 1.25px;
+  text-underline-offset: 6px;
+}
