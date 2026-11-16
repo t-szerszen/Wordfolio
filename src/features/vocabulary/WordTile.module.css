@@ -166,3 +166,9 @@
     font-size: 22px;
   }
 }
+
+/* clip-path przycina zwykły obrys fokusu, więc rysujemy go do środka. */
+.tile[data-shape='strip']:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--clay);
+}

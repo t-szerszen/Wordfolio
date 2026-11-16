@@ -29,7 +29,8 @@
   --paper3: #eadfcc;
   --ink: #3b2a20;
   --ink2: #66503f;
-  --ink3: #7e6655;
+  /* Odrobinę ciemniej niż w designie (#7e6655), żeby drobny tekst na kartkach miał kontrast AA. */
+  --ink3: #705948;
   --line: #dcccb4;
   --line2: #bfa98e;
   --clay: #a64b2a;
@@ -65,7 +66,7 @@
   --paper3: #1a1410;
   --ink: #ecdfcb;
   --ink2: #c2b19b;
-  --ink3: #a38f7b;
+  --ink3: #b29f8b;
   --line: #45372d;
   --line2: #5c4a3d;
   --clay: #e38c66;

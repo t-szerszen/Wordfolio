@@ -199,3 +199,9 @@
     gap: 18px;
   }
 }
+
+/* clip-path przycina zwykły obrys fokusu, więc rysujemy go do środka. */
+.tag:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--clay);
+}

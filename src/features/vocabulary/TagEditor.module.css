@@ -31,7 +31,7 @@
 }
 
 .remove {
-  width: 40px;
+  width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
@@ -65,4 +65,10 @@
   width: 160px;
   min-height: 44px;
   color: var(--ink);
+}
+
+/* clip-path przycina zwykły obrys fokusu, więc rysujemy go do środka. */
+.remove:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--clay);
 }
