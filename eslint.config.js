@@ -45,6 +45,11 @@ export default tseslint.config(
     },
   },
   {
+    // Deklaracje typów środowiska muszą być interfejsami, żeby scalały się z typami Vite.
+    files: ['**/*.d.ts'],
+    rules: { '@typescript-eslint/consistent-type-definitions': 'off' },
+  },
+  {
     files: ['eslint.config.js'],
     extends: [js.configs.recommended, prettier],
     languageOptions: { globals: globals.node },

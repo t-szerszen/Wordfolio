@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-type ImportMetaEnv = {
+interface ImportMetaEnv {
   readonly VITE_FIREBASE_API_KEY?: string;
   readonly VITE_FIREBASE_AUTH_DOMAIN?: string;
   readonly VITE_FIREBASE_PROJECT_ID?: string;
@@ -9,8 +9,4 @@ type ImportMetaEnv = {
   readonly VITE_FIREBASE_APP_ID?: string;
   readonly VITE_TRANSLATE_URL?: string;
   readonly VITE_MEMORY_BACKEND?: string;
-};
-
-type ImportMeta = {
-  readonly env: ImportMetaEnv;
-};
+}
