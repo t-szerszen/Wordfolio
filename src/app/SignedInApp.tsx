@@ -21,7 +21,7 @@ export function SignedInApp({ backend, uid }: SignedInAppProps) {
       <ThemeSync />
       <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
-          <Route element={<AppShell dueCount={0} />}>
+          <Route element={<AppShell />}>
             <Route index element={<ShelfScreen />} />
             <Route path="slownik" element={<VocabularyScreen />} />
             <Route path="powtorki" element={<ReviewScreen />} />

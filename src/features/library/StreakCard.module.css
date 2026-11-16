@@ -1,0 +1,67 @@
+.card {
+  position: relative;
+  flex: 1 1 140px;
+  min-width: 0;
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background-color: var(--paper2);
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0 23px,
+    var(--line) 23px 24px
+  );
+  background-position: 0 14px;
+  border-top: 2px solid var(--rose);
+  border-radius: 3px 4px 4px 3px;
+  transform: rotate(-1deg);
+  box-shadow: 0 8px 16px -12px var(--shadow2);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.count {
+  font-family: var(--font-hand);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tally {
+  max-width: 100%;
+  height: auto;
+  margin-top: 4px;
+  fill: none;
+  stroke: var(--ink2);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.tally .today {
+  stroke: var(--clay);
+  stroke-width: 1.9;
+}
+
+.meta {
+  margin-top: auto;
+  font-size: 13.5px;
+  color: var(--ink2);
+}
+
+@media (min-width: 720px) {
+  .card {
+    flex-basis: 170px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .card {
+    flex-basis: 200px;
+  }
+}

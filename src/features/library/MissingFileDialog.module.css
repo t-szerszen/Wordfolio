@@ -1,0 +1,12 @@
+.text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink2);
+}
+
+.hint {
+  align-self: center;
+  font-family: var(--font-hand);
+  font-size: 18px;
+  color: var(--ink3);
+}

@@ -1,0 +1,38 @@
+.progress {
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.line {
+  display: block;
+  width: 100%;
+  height: 8px;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: var(--line2);
+  stroke-width: 1.3;
+  stroke-dasharray: 3 4;
+}
+
+.fill {
+  stroke: var(--ink2);
+  stroke-width: 2.2;
+}
+
+.ribbon {
+  position: absolute;
+  top: -4px;
+  width: 10px;
+  height: 22px;
+  background: var(--clay);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+}
+
+.progress[data-size='footer'] .ribbon {
+  top: 1px;
+  width: 8px;
+  height: 16px;
+}
