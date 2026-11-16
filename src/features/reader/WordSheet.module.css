@@ -66,7 +66,8 @@
   }
 }
 
-.sheet:focus-visible,
-.note:focus-visible {
-  outline-offset: -2px;
+/* Kontener dostaje fokus tylko programowo (tabindex -1), żeby czytnik ekranu go ogłosił. */
+.sheet:focus,
+.note:focus {
+  outline: none;
 }
