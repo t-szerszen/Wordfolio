@@ -16,11 +16,16 @@ const TABS: readonly Tab[] = [
 
 type TabBarProps = {
   dueCount: number;
+  hideOnPhone?: boolean;
 };
 
-export function TabBar({ dueCount }: TabBarProps) {
+export function TabBar({ dueCount, hideOnPhone = false }: TabBarProps) {
   return (
-    <nav aria-label="Główna nawigacja" className={styles.bar}>
+    <nav
+      aria-label="Główna nawigacja"
+      className={styles.bar}
+      data-hide-on-phone={hideOnPhone || undefined}
+    >
       <svg
         aria-hidden="true"
         viewBox="0 0 400 6"

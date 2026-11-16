@@ -10,6 +10,12 @@
   box-shadow: 0 -10px 22px -16px var(--shadow2);
 }
 
+@media (max-width: 719.98px) {
+  .bar[data-hide-on-phone] {
+    display: none;
+  }
+}
+
 .edge {
   position: absolute;
   left: 0;

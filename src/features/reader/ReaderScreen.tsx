@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Navigate, useParams } from 'react-router';
+import { Navigate, useParams, useSearchParams } from 'react-router';
 import { Button } from '../../components/Button';
 import { TabBar } from '../../components/TabBar';
 import { useBooks } from '../../hooks/useBooks';
@@ -120,7 +120,11 @@ type ReaderViewProps = {
 
 function ReaderView({ book, doc, chapters }: ReaderViewProps) {
   const pageCount = doc.numPages;
-  const [page, setPage] = useState(() => Math.min(Math.max(1, book.page), pageCount));
+  const [searchParams] = useSearchParams();
+  // „?strona=” z karty słówka otwiera stronę, z której pochodzi przykład.
+  const [page, setPage] = useState(() =>
+    Math.min(Math.max(1, Number(searchParams.get('strona')) || book.page), pageCount),
+  );
   const [chrome, setChrome] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [selection, setSelection] = useState<Selection | null>(null);

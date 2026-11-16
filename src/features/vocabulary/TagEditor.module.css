@@ -1,0 +1,68 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13.5px;
+  color: var(--ink2);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.tag {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px 0 20px;
+  color: var(--ink);
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+  border-radius: 0 5px 5px 0;
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.remove {
+  width: 40px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink2);
+}
+
+.add,
+.input {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1.25px dashed var(--line2);
+  background: transparent;
+  color: var(--ink2);
+  border-radius: 0 6px 6px 0;
+  font-family: var(--font-hand);
+  font-size: 19px;
+}
+
+.add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+
+.input {
+  width: 160px;
+  min-height: 44px;
+  color: var(--ink);
+}

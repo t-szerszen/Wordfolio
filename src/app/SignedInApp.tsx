@@ -7,6 +7,7 @@ import { ReviewScreen } from '../features/review/ReviewScreen';
 import { SettingsScreen } from '../features/settings/SettingsScreen';
 import { ThemeSync } from '../features/settings/ThemeSync';
 import { VocabularyScreen } from '../features/vocabulary/VocabularyScreen';
+import { WordCardScreen } from '../features/vocabulary/WordCardScreen';
 import { AppShell } from './AppShell';
 import type { Backend } from './backend';
 import { DataProvider } from './DataProvider';
@@ -26,6 +27,7 @@ export function SignedInApp({ backend, uid }: SignedInAppProps) {
           <Route element={<AppShell />}>
             <Route index element={<ShelfScreen />} />
             <Route path="slownik" element={<VocabularyScreen />} />
+            <Route path="slownik/:wordId" element={<WordCardScreen />} />
             <Route path="powtorki" element={<ReviewScreen />} />
             <Route path="ustawienia" element={<SettingsScreen />} />
           </Route>
