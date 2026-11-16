@@ -1,0 +1,42 @@
+.loader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  overflow: hidden;
+}
+
+.pen {
+  flex: none;
+  max-width: 50%;
+  fill: none;
+  stroke: var(--ink2);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 220;
+  animation: write 1300ms ease-in-out infinite;
+}
+
+.label {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  color: var(--ink3);
+}
+
+@keyframes write {
+  from {
+    stroke-dashoffset: 220;
+  }
+  60%,
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pen {
+    animation: none;
+    stroke-dashoffset: 96;
+  }
+}
