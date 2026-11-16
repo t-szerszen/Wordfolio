@@ -34,6 +34,12 @@ describe('joinLines', () => {
     expect(joinLines('and then—', 'nothing')).toBe('and then—nothing');
   });
 
+  it('nie dubluje łącznika powtórzonego w nowej linii', () => {
+    expect(joinLines('a large rabbit-', '-hole under the hedge')).toBe(
+      'a large rabbit-hole under the hedge',
+    );
+  });
+
   it('scala dzielenie w cyrylicy', () => {
     expect(joinLines('несчаст-', 'ливая семья')).toBe('несчастливая семья');
   });
@@ -105,6 +111,32 @@ describe('layoutParagraphs', () => {
       { str: 'day', x: 124, y: 700, width: 20, height: 12 },
     ]);
     expect(paragraphs).toEqual([{ text: 'The first day', heading: false }]);
+  });
+
+  it('zostawia rzymski nagłówek rozdziału i słowo na końcu strony', () => {
+    const paragraphs = layoutParagraphs([
+      line('IV', 740, { size: 20, x: 280, width: 24 }),
+      line('Alice was beginning to get very tired', 700),
+      line('of sitting by her sister, and so she', 686),
+      line('did.', 672, { width: 30 }),
+    ]);
+    expect(paragraphs).toEqual([
+      { text: 'IV', heading: true },
+      {
+        text: 'Alice was beginning to get very tired of sitting by her sister, and so she did.',
+        heading: false,
+      },
+    ]);
+  });
+
+  it('pomija numery stron w różnych zapisach', () => {
+    for (const number of ['- 12 -', 'xiv', '7.']) {
+      const paragraphs = layoutParagraphs([
+        line('Body text line.', 700),
+        line(number, 60, { x: 280, width: 20 }),
+      ]);
+      expect(paragraphs.map((p) => p.text)).toEqual(['Body text line.']);
+    }
   });
 
   it('zwraca pustą listę dla strony bez tekstu', () => {

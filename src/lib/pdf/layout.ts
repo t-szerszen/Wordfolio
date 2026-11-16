@@ -1,5 +1,5 @@
 /** Zmiana algorytmu składania akapitów unieważnia akapity zapisane w cache. */
-export const LAYOUT_VERSION = 2;
+export const LAYOUT_VERSION = 4;
 
 /** Fragment tekstu z pdf.js sprowadzony do tego, czego potrzebuje składanie akapitów. */
 export type RawItem = {
@@ -39,7 +39,9 @@ const LOWERCASE_START = /^\p{Ll}/u;
 const LETTER_END = /\p{L}[-‐¬]$/u;
 const SENTENCE_END = /[.!?…:]["”»’)\]]*$/u;
 const PARAGRAPH_START = /^[\p{Lu}\p{N}"“„«‘'—–-]/u;
-const PAGE_NUMBER = /^[\s\-–—.]*(\d{1,4}|[ivxlcdm]{1,8})[\s\-–—.]*$/iu;
+const DIGIT_PAGE_NUMBER = /^[\s\-–—]*\d{1,4}[\s\-–—.]*$/u;
+/** Rzymskie numery stron bez kropki — „did.” czy „civil.” na końcu strony to zwykłe słowa. */
+const ROMAN_PAGE_NUMBER = /^[\s\-–—]*[ivxlcdm]{1,8}[\s\-–—]*$/iu;
 
 function normalize(text: string): string {
   return text.replace(/[ﬀ-ﬆ]/gu, (ch) => LIGATURES[ch] ?? ch).replace(/\s+/gu, ' ');
@@ -86,19 +88,27 @@ function buildLines(items: readonly RawItem[]): Line[] {
     .filter((line) => line.text !== '');
 }
 
+function isPageNumber(line: Line, bodySize: number): boolean {
+  // Większy krój to nagłówek (np. rozdział „IV”), a nie numer strony.
+  if (line.size > bodySize * 1.15) return false;
+  return DIGIT_PAGE_NUMBER.test(line.text) || ROMAN_PAGE_NUMBER.test(line.text);
+}
+
 /** Pomija samotne numery stron na górze i dole strony. */
-function dropPageNumbers(lines: Line[]): Line[] {
+function dropPageNumbers(lines: Line[], bodySize: number): Line[] {
   const result = [...lines];
   const first = result[0];
-  if (first && PAGE_NUMBER.test(first.text)) result.shift();
+  if (first && isPageNumber(first, bodySize)) result.shift();
   const last = result[result.length - 1];
-  if (last && PAGE_NUMBER.test(last.text)) result.pop();
+  if (last && isPageNumber(last, bodySize)) result.pop();
   return result;
 }
 
 /** Łączy dwie linie tego samego akapitu, usuwając dzielenie wyrazów na końcu linii. */
 export function joinLines(previous: string, next: string): string {
   if (previous.endsWith(SOFT_HYPHEN)) return previous.slice(0, -1) + next;
+  // Łącznik powtórzony na początku nowej linii („rabbit-” / „-hole”) to jeden łącznik słowa.
+  if (HYPHENS.test(previous) && /^[-\u2010]\p{L}/u.test(next)) return previous + next.slice(1);
   if (HYPHENS.test(previous) && LETTER_END.test(previous)) {
     // Mała litera na początku następnej linii oznacza wyraz podzielony przy łamaniu;
     // wielka (np. „Anglo-Saxon”) — łącznik należy do słowa.
@@ -109,10 +119,11 @@ export function joinLines(previous: string, next: string): string {
 }
 
 export function layoutParagraphs(items: readonly RawItem[]): Paragraph[] {
-  const lines = dropPageNumbers(buildLines(items));
+  const allLines = buildLines(items);
+  const bodySize = median(allLines.map((l) => l.size));
+  const lines = dropPageNumbers(allLines, bodySize);
   if (lines.length === 0) return [];
 
-  const bodySize = median(lines.map((l) => l.size));
   const gaps: number[] = [];
   for (let i = 1; i < lines.length; i++) {
     const gap = (lines[i - 1]?.y ?? 0) - (lines[i]?.y ?? 0);

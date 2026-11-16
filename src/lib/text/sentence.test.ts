@@ -24,6 +24,20 @@ describe('sentenceAround', () => {
     expect(context.match).toBe('Alice');
   });
 
+  it('nie kończy zdania na skrócie', () => {
+    const text = 'It rained. Then Mr. Smith went to Washington. Nobody came.';
+    const start = text.indexOf('Smith');
+    const context = sentenceAround(text, start, start + 5, 'en');
+    expect(context.before).toBe('Then Mr. ');
+    expect(context.after).toBe(' went to Washington.');
+  });
+
+  it('obsługuje polskie skróty', () => {
+    const text = 'Kupił owoce, np. jabłka i gruszki. Potem wrócił.';
+    const start = text.indexOf('jabłka');
+    expect(sentenceAround(text, start, start + 6, 'pl').before).toBe('Kupił owoce, np. ');
+  });
+
   it('przycina bardzo długie zdanie wokół słowa', () => {
     const long = `${'word '.repeat(200)}target ${'tail '.repeat(200)}end.`;
     const start = long.indexOf('target');
