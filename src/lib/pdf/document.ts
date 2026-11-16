@@ -1,5 +1,5 @@
 import type * as PdfJs from 'pdfjs-dist';
-import type { PDFDocumentProxy } from 'pdfjs-dist';
+import type { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
 import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import { layoutParagraphs, type Paragraph, type RawItem } from './layout';
 
@@ -20,10 +20,14 @@ function loadPdfjs(): Promise<typeof PdfJs> {
   return pdfjsPromise;
 }
 
-export async function openPdf(data: ArrayBuffer): Promise<PDFDocumentProxy> {
+/**
+ * Zwraca zadanie ładowania, a nie sam dokument: tylko ono pozwala zwolnić worker i pamięć,
+ * gdy użytkownik wyjdzie z czytnika, zanim PDF się otworzy, albo gdy otwarcie się nie uda.
+ */
+export async function openPdf(data: ArrayBuffer): Promise<PDFDocumentLoadingTask> {
   const pdfjs = await loadPdfjs();
   // pdf.js przekazuje bufor do workera i go odłącza — dajemy mu kopię.
-  return pdfjs.getDocument({ data: new Uint8Array(data.slice(0)), verbosity: 0 }).promise;
+  return pdfjs.getDocument({ data: new Uint8Array(data.slice(0)), verbosity: 0 });
 }
 
 function isTextItem(item: unknown): item is TextItem {

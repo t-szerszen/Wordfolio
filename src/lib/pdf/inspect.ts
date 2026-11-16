@@ -20,8 +20,9 @@ function infoString(info: object, key: string): string {
 }
 
 export async function inspectPdf(data: ArrayBuffer): Promise<PdfInfo> {
-  const doc = await openPdf(data);
+  const task = await openPdf(data);
   try {
+    const doc = await task.promise;
     const { info } = await doc.getMetadata();
     const pages = new Map<number, Paragraph[]>();
     let sample = '';
@@ -45,6 +46,6 @@ export async function inspectPdf(data: ArrayBuffer): Promise<PdfInfo> {
       pages,
     };
   } finally {
-    void doc.loadingTask.destroy();
+    void task.destroy();
   }
 }

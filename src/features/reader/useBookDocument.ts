@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { PDFDocumentLoadingTask } from 'pdfjs-dist';
 import { openPdf, type PDFDocumentProxy } from '../../lib/pdf/document';
 import { loadChapters, type Chapter } from '../../lib/pdf/outline';
 import { getFile } from '../../lib/storage/localStore';
@@ -16,7 +17,10 @@ export function useBookDocument(bookId: string, reloadKey: number): BookDocument
   const [state, setState] = useState<{ key: string; value: BookDocument } | null>(null);
 
   useEffect(() => {
-    const run = { cancelled: false, doc: null as PDFDocumentProxy | null };
+    const run: { cancelled: boolean; task: PDFDocumentLoadingTask | null } = {
+      cancelled: false,
+      task: null,
+    };
     const finish = (value: BookDocument) => {
       if (!run.cancelled) setState({ key, value });
     };
@@ -27,15 +31,17 @@ export function useBookDocument(bookId: string, reloadKey: number): BookDocument
           finish({ status: 'missing' });
           return;
         }
-        run.doc = await openPdf(await file.arrayBuffer());
-        finish({ status: 'ready', doc: run.doc, chapters: await loadChapters(run.doc) });
+        run.task = await openPdf(await file.arrayBuffer());
+        if (run.cancelled) return;
+        const doc = await run.task.promise;
+        finish({ status: 'ready', doc, chapters: await loadChapters(doc) });
       } catch {
         finish({ status: 'error' });
       }
     })();
     return () => {
       run.cancelled = true;
-      void run.doc?.loadingTask.destroy();
+      void run.task?.destroy();
     };
   }, [bookId, key]);
 

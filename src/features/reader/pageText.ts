@@ -17,10 +17,11 @@ export function loadPage(
   let pending = memory.get(key);
   if (!pending) {
     pending = (async () => {
-      const cached = await getCachedPage(bookId, page);
+      // Cache jest tylko przyspieszeniem: błąd IndexedDB (np. brak miejsca) nie blokuje czytania.
+      const cached = await getCachedPage(bookId, page).catch(() => null);
       if (cached) return cached;
       const { paragraphs } = await extractPage(doc, page);
-      await putCachedPage(bookId, page, paragraphs);
+      void putCachedPage(bookId, page, paragraphs).catch(() => undefined);
       return paragraphs;
     })();
     pending.catch(() => memory.delete(key));
