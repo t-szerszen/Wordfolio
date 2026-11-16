@@ -10,3 +10,5 @@ interface ImportMetaEnv {
   readonly VITE_TRANSLATE_URL?: string;
   readonly VITE_MEMORY_BACKEND?: string;
 }
+
+declare const __APP_VERSION__: string;

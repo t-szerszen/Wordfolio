@@ -1,0 +1,55 @@
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px 12px 15px 13px;
+  background: var(--st-sage);
+  color: var(--sage-ink);
+}
+
+.badge[data-state='saving'],
+.badge[data-state='connecting'] {
+  background: var(--st-ochre);
+  color: var(--ochre-ink);
+}
+
+.badge[data-state='offline'] {
+  background: var(--st-rose);
+  color: var(--rose-ink);
+}
+
+.text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 15px;
+}
+
+.detail {
+  font-family: var(--font-hand);
+  font-size: 18px;
+  line-height: 1.1;
+  color: var(--ink3);
+}
+
+.error {
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--rose-ink);
+}
+
+.button {
+  align-self: flex-start;
+}

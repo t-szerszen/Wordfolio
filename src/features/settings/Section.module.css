@@ -1,0 +1,15 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 18px 16px;
+  background: var(--paper2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 550;
+  font-size: 19px;
+  font-variation-settings: var(--display-axes);
+}
