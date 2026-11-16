@@ -1,0 +1,26 @@
+.progress {
+  position: relative;
+  height: 12px;
+}
+
+.line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 12px;
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: var(--line2);
+  stroke-width: 1.3;
+  stroke-dasharray: 3 5;
+}
+
+.fill {
+  stroke: var(--clay);
+  stroke-width: 2.6;
+  transition: clip-path 600ms ease-in-out;
+}

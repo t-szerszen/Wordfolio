@@ -1,0 +1,157 @@
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-top: 26px;
+  text-align: center;
+}
+
+.cup {
+  width: 120px;
+  height: 120px;
+  overflow: visible;
+}
+
+.ink {
+  fill: none;
+  stroke: var(--ink2);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.label {
+  fill: var(--st-ochre);
+  stroke: var(--ink2);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+.steam {
+  fill: none;
+  stroke: var(--clay);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-dasharray: 60;
+  animation: steam 1600ms ease-out 250ms both;
+}
+
+@keyframes steam {
+  from {
+    stroke-dashoffset: 60;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 580;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variation-settings: var(--display-axes);
+}
+
+.text {
+  max-width: 300px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink2);
+}
+
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  font-size: 14px;
+  color: var(--ink2);
+}
+
+.tally li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tally svg {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-family: var(--font-hand);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.actions {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.primary {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--clay);
+  color: var(--on-clay);
+  text-decoration: none;
+  border-radius: var(--radius-btn);
+  box-shadow: 0 10px 18px -12px var(--shadow2);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.more {
+  align-self: center;
+  min-height: 48px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  text-decoration: underline;
+  text-decoration-color: var(--line2);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1.25px;
+}
+
+@media (min-width: 720px) {
+  .done {
+    padding-top: 90px;
+  }
+
+  .cup {
+    width: 150px;
+    height: 150px;
+  }
+
+  .title {
+    font-size: 40px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .done {
+    padding-top: 50px;
+  }
+
+  .cup {
+    width: 140px;
+    height: 140px;
+  }
+}
