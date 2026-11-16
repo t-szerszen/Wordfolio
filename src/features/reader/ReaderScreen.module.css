@@ -30,6 +30,25 @@
   padding-bottom: 70dvh;
 }
 
+.showMenu {
+  position: absolute;
+  z-index: 8;
+  top: calc(var(--safe-top) + 8px);
+  left: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  background: var(--paper2);
+  color: var(--ink);
+  border-radius: var(--radius-chip);
+  box-shadow: 0 6px 14px -8px var(--shadow2);
+  transform: translateY(-200%);
+}
+
+.showMenu:focus-visible {
+  transform: none;
+}
+
 .runningHead {
   position: absolute;
   z-index: 2;

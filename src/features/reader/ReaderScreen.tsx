@@ -29,6 +29,8 @@ import { WordDetails } from './WordDetails';
 import { WordNote, WordSheet } from './WordSheet';
 import styles from './ReaderScreen.module.css';
 
+const MAX_BOOKMARKS = 500;
+
 export function ReaderScreen() {
   const { bookId = '' } = useParams();
   const { books, loading } = useBooks();
@@ -122,8 +124,10 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
   const pageCount = doc.numPages;
   const [searchParams] = useSearchParams();
   // „?strona=” z karty słówka otwiera stronę, z której pochodzi przykład.
+  const linkedPage = Number.parseInt(searchParams.get('strona') ?? '', 10);
+  const deepLinked = Number.isInteger(linkedPage);
   const [page, setPage] = useState(() =>
-    Math.min(Math.max(1, Number(searchParams.get('strona')) || book.page), pageCount),
+    Math.min(Math.max(1, deepLinked ? linkedPage : book.page), pageCount),
   );
   const [chrome, setChrome] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -135,7 +139,7 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
   const dueCount = useDueWords().length;
   const pageState = usePage(doc, book.id, page);
   const scrollRef = useRef<HTMLDivElement>(null);
-  useReadingPosition(book, page);
+  useReadingPosition(book, page, deepLinked);
 
   const paragraphs = pageState.status === 'ready' ? pageState.paragraphs : null;
   const tokens = useMemo(
@@ -149,6 +153,23 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
   const showChrome = desktop || chrome || panelOpen;
   const bookmarked = book.bookmarks.includes(page);
 
+  const closeSelection = useCallback(() => {
+    setSelection(null);
+  }, []);
+
+  // Po zamknięciu notatki fokus wraca do słowa, z którego ją otwarto.
+  const previousSelection = useRef<Selection | null>(null);
+  useEffect(() => {
+    const previous = previousSelection.current;
+    previousSelection.current = selection;
+    if (!previous || selection) return;
+    scrollRef.current
+      ?.querySelector<HTMLElement>(
+        `[data-paragraph="${previous.paragraph}"] [data-token="${previous.start}"]`,
+      )
+      ?.focus({ preventScroll: true });
+  }, [selection]);
+
   const goTo = useCallback(
     (next: number) => {
       const target = Math.min(Math.max(1, next), pageCount);
@@ -161,11 +182,15 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Skróty z modyfikatorami (np. Alt+← = wstecz) należą do przeglądarki i czytników ekranu.
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target instanceof HTMLElement ? event.target : null;
-      if (target?.closest('input, textarea, [data-token], [role="dialog"]')) return;
-      if (event.key === 'PageDown' || event.key === 'ArrowRight') goTo(page + 1);
-      else if (event.key === 'PageUp' || event.key === 'ArrowLeft') goTo(page - 1);
-      else if (event.key === 'Escape') setSelection(null);
+      if (target?.closest('input, textarea, select')) return;
+      // Strzałki na słowie przesuwają fokus między słowami, poza tekstem — kartkują.
+      const onText = target?.closest('[data-token], [role="dialog"]') != null;
+      if (event.key === 'PageDown' || (event.key === 'ArrowRight' && !onText)) goTo(page + 1);
+      else if (event.key === 'PageUp' || (event.key === 'ArrowLeft' && !onText)) goTo(page - 1);
+      else if (event.key === 'Escape' && selection) closeSelection();
       else return;
       event.preventDefault();
     };
@@ -173,7 +198,7 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
     return () => {
       window.removeEventListener('keydown', onKey);
     };
-  }, [goTo, page]);
+  }, [goTo, page, selection, closeSelection]);
 
   useEffect(() => {
     if (!selection || wide) return;
@@ -184,13 +209,14 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
     if (!word || !scroller) return;
     const top = word.getBoundingClientRect().top;
     // Arkusz zajmuje dolną część ekranu — słowo przesuwamy do górnej części, żeby było widać kontekst.
-    if (top > window.innerHeight * 0.35)
-      scroller.scrollBy({ top: top - window.innerHeight * 0.22, behavior: 'smooth' });
+    if (top > window.innerHeight * 0.35) {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scroller.scrollBy({
+        top: top - window.innerHeight * 0.22,
+        behavior: reduced ? 'auto' : 'smooth',
+      });
+    }
   }, [selection, wide]);
-
-  const closeSelection = useCallback(() => {
-    setSelection(null);
-  }, []);
 
   const closePanel = useCallback(() => {
     setPanelOpen(false);
@@ -224,6 +250,7 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
             setPanelOpen(!panelOpen);
           }}
           onToggleBookmark={() => {
+            if (!bookmarked && book.bookmarks.length >= MAX_BOOKMARKS) return;
             const bookmarks = bookmarked
               ? book.bookmarks.filter((p) => p !== page)
               : [...book.bookmarks, page].sort((a, b) => a - b);
@@ -231,9 +258,20 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
           }}
         />
       ) : (
-        <div aria-hidden="true" className={styles.runningHead}>
-          <span lang={book.lang}>{chapter?.title ?? book.title}</span>
-        </div>
+        <>
+          <button
+            type="button"
+            className={styles.showMenu}
+            onClick={() => {
+              setChrome(true);
+            }}
+          >
+            Pokaż menu czytnika
+          </button>
+          <div aria-hidden="true" className={styles.runningHead}>
+            <span lang={book.lang}>{chapter?.title ?? book.title}</span>
+          </div>
+        </>
       )}
 
       <main id="main" ref={scrollRef} className={styles.scroller}>
@@ -283,7 +321,7 @@ function ReaderView({ book, doc, chapters }: ReaderViewProps) {
                 onEdge: (edge, target) => {
                   setSelection((current) =>
                     current?.paragraph === target.paragraph
-                      ? moveEdge(current, edge, target.token)
+                      ? moveEdge(tokens[target.paragraph] ?? [], current, edge, target.token)
                       : current,
                   );
                 },

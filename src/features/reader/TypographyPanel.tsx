@@ -38,6 +38,7 @@ export function TypographyPanel({ onClose }: { onClose: () => void }) {
   const sizeIndex = FONT_STEPS.findIndex((s) => s === settings.fontSize);
 
   useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     ref.current?.querySelector<HTMLElement>('button')?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -45,6 +46,7 @@ export function TypographyPanel({ onClose }: { onClose: () => void }) {
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
+      opener?.focus({ preventScroll: true });
     };
   }, [onClose]);
 

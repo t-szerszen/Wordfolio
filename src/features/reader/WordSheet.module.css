@@ -65,3 +65,8 @@
     transform: none;
   }
 }
+
+.sheet:focus-visible,
+.note:focus-visible {
+  outline-offset: -2px;
+}
