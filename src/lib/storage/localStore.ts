@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Paragraph } from '../pdf/layout';
+import { LAYOUT_VERSION, type Paragraph } from '../pdf/layout';
 
 /**
  * Pliki PDF i dane pochodne trzymamy tylko lokalnie (IndexedDB) — do Firestore trafiają metadane.
@@ -36,7 +36,7 @@ export async function listFileIds(): Promise<string[]> {
 }
 
 function pageKey(bookId: string, page: number): string {
-  return `${bookId}:${page}`;
+  return `${bookId}:${page}:v${LAYOUT_VERSION}`;
 }
 
 export async function getCachedPage(bookId: string, page: number): Promise<Paragraph[] | null> {

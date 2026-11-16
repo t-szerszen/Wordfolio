@@ -85,6 +85,19 @@ describe('layoutParagraphs', () => {
     ]);
   });
 
+  it('nie dzieli akapitu po krótkiej linii bez końca zdania', () => {
+    const paragraphs = layoutParagraphs([
+      line('‘and what is the use of a book,’', 700, { width: 220 }),
+      line('thought Alice ‘without pictures?’', 686, { width: 240 }),
+      line('Short final line.', 672, { width: 120 }),
+      line('Next paragraph starts here.', 658, { width: 200 }),
+    ]);
+    expect(paragraphs.map((p) => p.text)).toEqual([
+      '‘and what is the use of a book,’ thought Alice ‘without pictures?’ Short final line.',
+      'Next paragraph starts here.',
+    ]);
+  });
+
   it('wstawia spację między osobnymi fragmentami tej samej linii i rozwija ligatury', () => {
     const paragraphs = layoutParagraphs([
       { str: 'The', x: 72, y: 700, width: 20, height: 12 },

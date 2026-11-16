@@ -1,3 +1,6 @@
+/** Zmiana algorytmu składania akapitów unieważnia akapity zapisane w cache. */
+export const LAYOUT_VERSION = 2;
+
 /** Fragment tekstu z pdf.js sprowadzony do tego, czego potrzebuje składanie akapitów. */
 export type RawItem = {
   str: string;
@@ -34,7 +37,8 @@ const SOFT_HYPHEN = '­';
 const HYPHENS = /[-‐¬]$/u;
 const LOWERCASE_START = /^\p{Ll}/u;
 const LETTER_END = /\p{L}[-‐¬]$/u;
-const SENTENCE_END = /[.!?:;…"”»’)\]]$/u;
+const SENTENCE_END = /[.!?…:]["”»’)\]]*$/u;
+const PARAGRAPH_START = /^[\p{Lu}\p{N}"“„«‘'—–-]/u;
 const PAGE_NUMBER = /^[\s\-–—.]*(\d{1,4}|[ivxlcdm]{1,8})[\s\-–—.]*$/iu;
 
 function normalize(text: string): string {
@@ -143,7 +147,9 @@ export function layoutParagraphs(items: readonly RawItem[]): Paragraph[] {
       const isIndented = (l: Line) => l.left > left + bodySize * 0.8 && l.left < (left + right) / 2;
       const indented = isIndented(line) && !isIndented(previous);
       const previousShort =
-        previous.right < right - bodySize * 2 && SENTENCE_END.test(previous.text);
+        previous.right < right - bodySize * 2 &&
+        SENTENCE_END.test(previous.text) &&
+        PARAGRAPH_START.test(line.text);
       startsNew =
         isHeading !== heading ||
         gap > lineGap * 1.45 ||
