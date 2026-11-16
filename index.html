@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Wordfolio — czytaj książki w PDF w oryginale, stukaj nieznane słowa i ucz się ich z fiszek."
+    />
+    <meta name="theme-color" content="#f5ede0" />
+    <title>Wordfolio</title>
+    <script>
+      (function () {
+        var choice = 'system';
+        try {
+          choice = localStorage.getItem('wordfolio:theme') || 'system';
+        } catch (e) {}
+        var dark =
+          choice === 'lampka' ||
+          (choice !== 'papier' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'lampka' : 'papier';
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', dark ? '#221a15' : '#f5ede0');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Wordfolio potrzebuje włączonego JavaScriptu.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

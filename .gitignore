@@ -1,0 +1,52 @@
+# Zależności i build
+node_modules/
+dist/
+dev-dist/
+*.tsbuildinfo
+coverage/
+
+# Zmienne środowiskowe
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logi
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+firebase-debug.log*
+firestore-debug.log*
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Edytory i system
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Design (lokalnie, poza repo)
+design/
+
+# Narzędzia AI
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+AGENTS.md
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+.aider*
+.github/copilot-instructions.md
+.continue/
+.codex/
+GEMINI.md
+.gemini/

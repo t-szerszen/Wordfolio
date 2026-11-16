@@ -1,0 +1,6 @@
+dist
+dev-dist
+design
+coverage
+package-lock.json
+src/assets/fonts
