@@ -29,12 +29,16 @@ export function parseTranslation(body: unknown): TranslationResult {
   };
 }
 
+export type TokenProvider = () => Promise<string | null>;
+
 /**
  * Klient endpointu tłumaczeń (docelowo małe proxy z kluczem API po stronie serwera).
- * Wysyłamy tylko słowo i jego zdanie — nigdy treści książki.
+ * Wysyłamy tylko słowo i jego zdanie — nigdy treści książki. Token logowania idzie w nagłówku,
+ * żeby proxy mogło obsługiwać wyłącznie zalogowanych użytkowników.
  */
 export function httpTranslationService(
   url: string,
+  getToken: TokenProvider,
   fetcher: typeof fetch = fetch,
 ): TranslationService {
   return {
@@ -43,11 +47,14 @@ export function httpTranslationService(
         throw new TranslationError('offline', 'Brak połączenia z siecią.');
       }
       const timeout = AbortSignal.timeout(TIMEOUT_MS);
+      const token = await getToken().catch(() => null);
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = `Bearer ${token}`;
       let response: Response;
       try {
         response = await fetcher(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             word: request.word,
             sentence: request.sentence,

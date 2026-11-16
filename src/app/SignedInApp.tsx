@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { ShelfScreen } from '../features/library/ShelfScreen';
 import { ThemeSync } from '../features/settings/ThemeSync';
+import { setTranslationTokenProvider } from '../lib/translation';
 import { AppShell } from './AppShell';
 import type { Backend, DataBackend } from './backend';
 import { DataProvider } from './DataProvider';
@@ -72,5 +73,8 @@ function Routed({ data, uid }: { data: DataBackend; uid: string }) {
 
 export function SignedInApp({ backend, uid }: SignedInAppProps) {
   const data = useDataBackend(backend);
+  useEffect(() => {
+    setTranslationTokenProvider(backend.auth.idToken);
+  }, [backend]);
   return data ? <Routed data={data} uid={uid} /> : null;
 }

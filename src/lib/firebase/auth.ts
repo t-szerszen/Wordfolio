@@ -63,6 +63,11 @@ export async function completeRedirect(auth: Auth): Promise<unknown> {
   }
 }
 
+/** Token ID dla proxy tłumaczeń — pozwala mu wpuszczać tylko zalogowanych użytkowników. */
+export async function idToken(auth: Auth): Promise<string | null> {
+  return (await auth.currentUser?.getIdToken()) ?? null;
+}
+
 export function signOutUser(auth: Auth): Promise<void> {
   return signOut(auth);
 }

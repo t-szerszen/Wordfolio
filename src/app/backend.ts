@@ -1,6 +1,7 @@
 import type { FirebaseOptions } from 'firebase/app';
 import {
   completeRedirect,
+  idToken,
   signInWithGoogle,
   signOutUser,
   watchAuth,
@@ -16,6 +17,7 @@ export type AuthBackend = {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   completeRedirect: () => Promise<unknown>;
+  idToken: () => Promise<string | null>;
 };
 
 /** Jedyne miejsce, które łączy Firebase z resztą aplikacji. */
@@ -33,6 +35,7 @@ export function createFirebaseBackend(options: FirebaseOptions): Backend {
       signIn: () => signInWithGoogle(auth),
       signOut: () => signOutUser(auth),
       completeRedirect: () => completeRedirect(auth),
+      idToken: () => idToken(auth),
     },
     loadData: () => {
       data ??= import('../lib/firebase/dataBackend').then((m) => m.createDataBackend(app));

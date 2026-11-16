@@ -1,5 +1,5 @@
 import { cachedTranslationService } from './cached';
-import { httpTranslationService } from './http';
+import { httpTranslationService, type TokenProvider } from './http';
 import { mockTranslationService } from './mock';
 import { TranslationError, type TranslationService } from './types';
 
@@ -10,9 +10,16 @@ const notConfigured: TranslationService = {
     ),
 };
 
+let tokenProvider: TokenProvider = () => Promise.resolve(null);
+
+/** Aplikacja po zalogowaniu podaje, skąd brać token dla proxy tłumaczeń. */
+export function setTranslationTokenProvider(provider: TokenProvider): void {
+  tokenProvider = provider;
+}
+
 function create(): TranslationService {
   const url = import.meta.env.VITE_TRANSLATE_URL?.trim();
-  if (url) return cachedTranslationService(httpTranslationService(url));
+  if (url) return cachedTranslationService(httpTranslationService(url, () => tokenProvider()));
   if (import.meta.env.DEV) return mockTranslationService();
   return notConfigured;
 }

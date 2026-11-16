@@ -135,6 +135,7 @@ export function createMemoryBackend(): Backend {
       signIn: () => setUser(true),
       signOut: () => setUser(false),
       completeRedirect: () => Promise.resolve(null),
+      idToken: () => Promise.resolve(null),
     },
     loadData: () =>
       Promise.resolve({
