@@ -1,17 +1,15 @@
 import type { ThemeChoice } from '../../lib/data/models';
-
-export type { ThemeChoice };
 export type ResolvedTheme = 'papier' | 'lampka';
 
 const STORAGE_KEY = 'wordfolio:theme';
 const THEME_COLORS: Record<ResolvedTheme, string> = { papier: '#f5ede0', lampka: '#221a15' };
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
-export function isThemeChoice(value: unknown): value is ThemeChoice {
+function isThemeChoice(value: unknown): value is ThemeChoice {
   return value === 'papier' || value === 'lampka' || value === 'system';
 }
 
-export function resolveTheme(choice: ThemeChoice, prefersDark: boolean): ResolvedTheme {
+function resolveTheme(choice: ThemeChoice, prefersDark: boolean): ResolvedTheme {
   if (choice === 'system') return prefersDark ? 'lampka' : 'papier';
   return choice;
 }
