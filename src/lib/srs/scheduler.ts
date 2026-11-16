@@ -83,31 +83,40 @@ function inRelearning(state: SrsState, grade: Grade, now: number): SrsState {
   }
 }
 
-function inReview(state: SrsState, grade: Grade, now: number): SrsState {
+/**
+ * Odstępy rosną z oceną (Trudne < Dobrze < Łatwe), więc każdy przycisk daje inny termin.
+ * Powtórka przed terminem („Jeszcze 5 kart”) liczy wzrost od czasu, który faktycznie minął,
+ * a nie od pełnego odstępu — inaczej karty za szybko trafiałyby do „znanych”.
+ */
+function reviewIntervals(
+  state: SrsState,
+  now: number,
+): { hard: number; good: number; easy: number } {
   const interval = Math.max(1, state.intervalDays);
-  switch (grade) {
-    case 'again':
-      return {
-        ...state,
-        phase: 'relearning',
-        step: 0,
-        lapses: state.lapses + 1,
-        ease: clampEase(state.ease - 0.2),
-        intervalDays: clampDays(interval * 0.5),
-        due: now + RELEARNING_STEP,
-      };
-    case 'hard':
-      return graduate(state, now, Math.max(interval + 1, interval * 1.2), state.ease - 0.15);
-    case 'good':
-      return graduate(state, now, Math.max(interval + 1, interval * state.ease));
-    case 'easy':
-      return graduate(
-        state,
-        now,
-        Math.max(interval + 1, interval * state.ease * 1.3),
-        state.ease + 0.15,
-      );
+  const early = state.due > now && state.lastReviewedAt !== null;
+  const base = early ? Math.max(0, (now - (state.lastReviewedAt ?? now)) / DAY) : interval;
+  const hard = clampDays(Math.max(early ? interval : interval + 1, base * 1.2));
+  const good = clampDays(Math.max(hard + 1, base * state.ease));
+  const easy = clampDays(Math.max(good + 1, base * state.ease * 1.3));
+  return { hard, good, easy };
+}
+
+function inReview(state: SrsState, grade: Grade, now: number): SrsState {
+  if (grade === 'again') {
+    return {
+      ...state,
+      phase: 'relearning',
+      step: 0,
+      lapses: state.lapses + 1,
+      ease: clampEase(state.ease - 0.2),
+      intervalDays: clampDays(Math.max(1, state.intervalDays) * 0.5),
+      due: now + RELEARNING_STEP,
+    };
   }
+  const days = reviewIntervals(state, now);
+  if (grade === 'hard') return graduate(state, now, days.hard, state.ease - 0.15);
+  if (grade === 'good') return graduate(state, now, days.good);
+  return graduate(state, now, days.easy, state.ease + 0.15);
 }
 
 export function review(state: SrsState, grade: Grade, now: number): SrsState {

@@ -80,6 +80,27 @@ describe('karta w powtórkach', () => {
     expect(relearned).toMatchObject({ phase: 'review', intervalDays: 10 });
   });
 
+  it('każdy przycisk daje inny, rosnący odstęp', () => {
+    for (const [interval, ease] of [
+      [1, 2.5],
+      [2, 1.3],
+      [30, 2.1],
+    ] as const) {
+      const card = reviewCard(interval, ease);
+      const hard = review(card, 'hard', NOW).intervalDays;
+      const good = review(card, 'good', NOW).intervalDays;
+      const easy = review(card, 'easy', NOW).intervalDays;
+      expect(hard).toBeLessThan(good);
+      expect(good).toBeLessThan(easy);
+    }
+  });
+
+  it('powtórka przed terminem nie nadmuchuje odstępu', () => {
+    const card = { ...reviewCard(10), lastReviewedAt: NOW - DAY, due: NOW + 9 * DAY };
+    expect(review(card, 'good', NOW).intervalDays).toBe(11);
+    expect(review(card, 'easy', NOW).intervalDays).toBe(12);
+  });
+
   it('łatwość nie spada poniżej 1,3', () => {
     let state = reviewCard(5, 1.35);
     for (let i = 0; i < 5; i++) state = review(state, 'again', NOW);
