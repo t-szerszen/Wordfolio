@@ -1,9 +1,11 @@
 import {
   serverTimestamp,
-  Timestamp,
   type FieldValue,
   type FirestoreDataConverter,
   type QueryDocumentSnapshot,
+  type DocumentData,
+  type SetOptions,
+  type Timestamp,
 } from 'firebase/firestore';
 import {
   COVER_COLORS,
@@ -41,7 +43,7 @@ export type BookDoc = {
   page: number;
   bookmarks: number[];
   lastOpenedAt: number | null;
-  createdAt: Stamp;
+  createdAt?: Stamp;
   updatedAt: Stamp;
 };
 
@@ -57,15 +59,19 @@ export type WordDoc = {
   status: string;
   context: { sentence: string; bookId: string | null; bookTitle: string; page: number | null };
   srs: SrsState;
-  createdAt: Stamp;
+  createdAt?: Stamp;
   updatedAt: Stamp;
 };
 
-export type SettingsDoc = Omit<Settings, 'updatedAt'> & { updatedAt: Stamp };
-
-/** Dokumenty zawsze zapisujemy w całości ze znacznikiem serwera — to podstawa last-write-wins. */
-function createdStamp(createdAt: number | null): Stamp {
-  return createdAt === null ? serverTimestamp() : Timestamp.fromMillis(createdAt);
+/**
+ * Zapis bez `merge` to utworzenie dokumentu (createdAt nadaje serwer). Zapis z `merge` to
+ * aktualizacja: nadpisuje wszystkie pola treści, ale nie dotyka createdAt — reguły pilnują,
+ * żeby się nie zmieniał.
+ */
+function stamps(options: SetOptions | undefined): { createdAt?: Stamp; updatedAt: Stamp } {
+  return options
+    ? { updatedAt: serverTimestamp() }
+    : { createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
 }
 
 function read(snapshot: QueryDocumentSnapshot): Fields {
@@ -74,7 +80,7 @@ function read(snapshot: QueryDocumentSnapshot): Fields {
 }
 
 export const bookConverter: FirestoreDataConverter<Book, BookDoc> = {
-  toFirestore(book: Book): BookDoc {
+  toFirestore(book: Book, options?: SetOptions): BookDoc {
     return {
       title: book.title,
       author: book.author,
@@ -87,8 +93,7 @@ export const bookConverter: FirestoreDataConverter<Book, BookDoc> = {
       page: book.page,
       bookmarks: book.bookmarks,
       lastOpenedAt: book.lastOpenedAt,
-      createdAt: createdStamp(book.createdAt),
-      updatedAt: serverTimestamp(),
+      ...stamps(options),
     };
   },
   fromFirestore(snapshot): Book {
@@ -126,7 +131,7 @@ function readSrs(value: unknown): SrsState {
 }
 
 export const wordConverter: FirestoreDataConverter<Word, WordDoc> = {
-  toFirestore(word: Word): WordDoc {
+  toFirestore(word: Word, options?: SetOptions): WordDoc {
     return {
       term: word.term,
       lang: word.lang,
@@ -144,8 +149,7 @@ export const wordConverter: FirestoreDataConverter<Word, WordDoc> = {
         page: word.context.page,
       },
       srs: { ...word.srs },
-      createdAt: createdStamp(word.createdAt),
-      updatedAt: serverTimestamp(),
+      ...stamps(options),
     };
   },
   fromFirestore(snapshot): Word {
@@ -176,19 +180,10 @@ export const wordConverter: FirestoreDataConverter<Word, WordDoc> = {
   },
 };
 
-export const settingsConverter: FirestoreDataConverter<Settings, SettingsDoc> = {
-  toFirestore(settings: Settings): SettingsDoc {
-    return {
-      theme: settings.theme,
-      fontSize: settings.fontSize,
-      lineHeight: settings.lineHeight,
-      margins: settings.margins,
-      showSavedWords: settings.showSavedWords,
-      bookLang: settings.bookLang,
-      targetLang: settings.targetLang,
-      reviewDays: settings.reviewDays,
-      updatedAt: serverTimestamp(),
-    };
+/** Ustawienia tylko odczytujemy przez konwerter — zapis składa repozytorium (dopisywanie dni powtórek). */
+export const settingsConverter: FirestoreDataConverter<Settings> = {
+  toFirestore(settings: Settings): DocumentData {
+    return { ...settings };
   },
   fromFirestore(snapshot): Settings {
     const d = read(snapshot);

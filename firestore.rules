@@ -33,13 +33,25 @@ service cloud.firestore {
       return data.updatedAt == request.time;
     }
 
-    // Przy tworzeniu createdAt nadaje serwer. Przy edycji klient odsyła wartość z lokalnej kopii,
-    // która może być jeszcze szacunkiem albo stracić mikrosekundy — wymagamy więc tylko,
-    // by nie wskazywała przyszłości.
+    // createdAt nadaje serwer przy tworzeniu i nie może się potem zmienić. Dzięki temu „utworzenie”
+    // dokumentu, który już istnieje (to samo słowo z innego urządzenia), zostaje odrzucone
+    // zamiast nadpisać jego postępy.
     function hasCreatedAt(data) {
       return resource == null
         ? data.createdAt == request.time
-        : data.createdAt is timestamp && data.createdAt <= request.time;
+        : data.createdAt == resource.data.createdAt;
+    }
+
+    function isTag(tags, i) {
+      return tags.size() <= i || (tags[i] is string && tags[i].size() > 0 && tags[i].size() <= 40);
+    }
+
+    function hasValidTags(tags) {
+      return tags is list && tags.size() <= 20
+        && isTag(tags, 0) && isTag(tags, 1) && isTag(tags, 2) && isTag(tags, 3) && isTag(tags, 4)
+        && isTag(tags, 5) && isTag(tags, 6) && isTag(tags, 7) && isTag(tags, 8) && isTag(tags, 9)
+        && isTag(tags, 10) && isTag(tags, 11) && isTag(tags, 12) && isTag(tags, 13) && isTag(tags, 14)
+        && isTag(tags, 15) && isTag(tags, 16) && isTag(tags, 17) && isTag(tags, 18) && isTag(tags, 19);
     }
 
     function isValidBook(bookId, data) {
@@ -104,7 +116,7 @@ service cloud.firestore {
         && isText(data.definition, 600)
         && isText(data.ipa, 80)
         && isText(data.note, 1000)
-        && data.tags is list && data.tags.size() <= 20
+        && hasValidTags(data.tags)
         && data.status in ['new', 'learning', 'known']
         && isValidContext(data.context)
         && isValidSrs(data.srs)
@@ -126,7 +138,7 @@ service cloud.firestore {
         && data.showSavedWords is bool
         && isNonEmptyText(data.bookLang, 12)
         && isNonEmptyText(data.targetLang, 12)
-        && data.reviewDays is list && data.reviewDays.size() <= 400
+        && data.reviewDays is list && data.reviewDays.size() <= 3650
         && stampedNow(data);
     }
 

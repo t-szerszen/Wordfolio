@@ -1,4 +1,4 @@
-import type { Book, Settings, Word } from './models';
+import type { Book, Settings, SettingsInput, Word } from './models';
 
 export type Unsubscribe = () => void;
 
@@ -12,19 +12,22 @@ export type Listener<T> = (value: T, meta: SnapshotMeta) => void;
 export type ErrorListener = (error: Error) => void;
 
 /**
- * Zapis zawsze nadpisuje cały dokument (createdAt === null oznacza nowy),
- * więc przy konflikcie wygrywa w całości wersja zapisana na serwerze jako ostatnia.
+ * Identyfikatory są deterministyczne (hash pliku, hash słowa), więc to samo słowo czy książka
+ * powstaje niezależnie na kilku urządzeniach. Dlatego tworzenie nigdy nie nadpisuje istniejącego
+ * dokumentu, a aktualizacja nadpisuje wszystkie pola treści (bez createdAt) — last-write-wins.
  */
 export type CollectionRepository<T> = {
   subscribe: (onChange: Listener<T[]>, onError: ErrorListener) => Unsubscribe;
-  save: (item: T) => Promise<void>;
+  create: (item: T) => Promise<void>;
+  update: (item: T) => Promise<void>;
   remove: (id: string) => Promise<void>;
 };
 
-export type BooksRepository = CollectionRepository<Book>;
+export type BooksRepository = Omit<CollectionRepository<Book>, 'remove'>;
 export type WordsRepository = CollectionRepository<Word>;
 
 export type SettingsRepository = {
   subscribe: (onChange: Listener<Settings | null>, onError: ErrorListener) => Unsubscribe;
-  save: (settings: Settings) => Promise<void>;
+  /** Zapisuje ustawienia; dni powtórek tylko dopisuje (suma zbiorów), żeby nie zgubić serii z innych urządzeń. */
+  save: (settings: Omit<SettingsInput, 'reviewDays'>, addDays: readonly string[]) => Promise<void>;
 };

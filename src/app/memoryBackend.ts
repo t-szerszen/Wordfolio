@@ -67,12 +67,16 @@ function collectionStore<
         stop();
       };
     },
-    save: (item) => {
+    create: (item) => {
+      const items = load<T>(key);
+      if (items[item.id]) return Promise.resolve();
       const now = Date.now();
-      return write({
-        ...load<T>(key),
-        [item.id]: { ...item, createdAt: item.createdAt ?? now, updatedAt: now },
-      });
+      return write({ ...items, [item.id]: { ...item, createdAt: now, updatedAt: now } });
+    },
+    update: (item) => {
+      const items = load<T>(key);
+      const createdAt = items[item.id]?.createdAt ?? Date.now();
+      return write({ ...items, [item.id]: { ...item, createdAt, updatedAt: Date.now() } });
     },
     remove: (id) => {
       return write(Object.fromEntries(Object.entries(load<T>(key)).filter(([k]) => k !== id)));
@@ -98,8 +102,12 @@ function settingsStore(key: string): SettingsRepository {
         stop();
       };
     },
-    save: (settings) => {
-      localStorage.setItem(key, JSON.stringify({ main: { ...settings, updatedAt: Date.now() } }));
+    save: (settings, addDays) => {
+      const days = [...new Set([...(read()?.reviewDays ?? []), ...addDays])];
+      localStorage.setItem(
+        key,
+        JSON.stringify({ main: { ...settings, reviewDays: days, updatedAt: Date.now() } }),
+      );
       emit();
       return Promise.resolve();
     },

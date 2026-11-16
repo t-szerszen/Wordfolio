@@ -77,7 +77,7 @@ export function WordDetails({ word, lang, page, variant, onClose }: WordDetailsP
         <SaveButton
           saved={saved}
           compact={variant === 'note'}
-          disabled={saved && !word.canUnsave}
+          disabled={saved ? !word.canUnsave : !word.canSave}
           onClick={saved ? word.unsave : word.save}
         />
         <button

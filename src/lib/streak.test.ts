@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeStreak, dayKey, withDay } from './streak';
+import { computeStreak, dayKey } from './streak';
 
 describe('computeStreak', () => {
   it('liczy dni z rzędu kończące się dziś', () => {
@@ -19,13 +19,6 @@ describe('computeStreak', () => {
   it('zeruje serię po dniu przerwy i przechodzi przez granicę miesiąca', () => {
     expect(computeStreak(['2026-11-13'], '2026-11-16').count).toBe(0);
     expect(computeStreak(['2026-10-31', '2026-11-01'], '2026-11-01').count).toBe(2);
-  });
-});
-
-describe('withDay', () => {
-  it('dodaje dzień bez duplikatów', () => {
-    expect(withDay(['2026-11-15'], '2026-11-16')).toEqual(['2026-11-15', '2026-11-16']);
-    expect(withDay(['2026-11-16'], '2026-11-16')).toEqual(['2026-11-16']);
   });
 });
 

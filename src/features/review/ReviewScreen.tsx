@@ -7,7 +7,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWords } from '../../hooks/useWords';
 import { previewIntervals } from '../../lib/srs/scheduler';
 import type { Grade } from '../../lib/srs/types';
-import { computeStreak, dayKey, withDay } from '../../lib/streak';
+import { computeStreak, dayKey } from '../../lib/streak';
 import { Flashcard } from './Flashcard';
 import { GradeButtons } from './GradeButtons';
 import { GRADES } from './grades';
@@ -18,7 +18,7 @@ import styles from './ReviewScreen.module.css';
 
 export function ReviewScreen() {
   const { words, loading, saveWord } = useWords();
-  const { settings, updateSettings } = useSettings();
+  const { settings, addReviewDay } = useSettings();
   const now = useNow();
   const [started, setStarted] = useState<Session | null>(null);
   const [flipped, setFlipped] = useState(false);
@@ -36,8 +36,7 @@ export function ReviewScreen() {
     saveWord(result.word);
     setStarted(result.session);
     setFlipped(false);
-    if (!settings.reviewDays.includes(today))
-      updateSettings({ reviewDays: withDay(settings.reviewDays, today) });
+    if (!settings.reviewDays.includes(today)) addReviewDay(today);
   };
 
   useEffect(() => {

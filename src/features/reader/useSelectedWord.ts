@@ -9,7 +9,7 @@ import type { Paragraph } from '../../lib/pdf/layout';
 import { sentenceAround, sentenceText, type SentenceContext } from '../../lib/text/sentence';
 import { normalizeTerm, type Token } from '../../lib/text/tokenize';
 import type { TranslationRequest } from '../../lib/translation';
-import { createWord, dictionaryForm, wordIdFor } from '../vocabulary/wordFactory';
+import { createWord as buildWord, dictionaryForm, wordIdFor } from '../vocabulary/wordFactory';
 import { isPhrase, selectionRange, type Selection } from './selection';
 
 export type SelectedWord = {
@@ -20,6 +20,8 @@ export type SelectedWord = {
   translation: TranslationState;
   retry: () => void;
   save: () => void;
+  /** Zapis czeka na wczytanie słownika — inaczej nie wiadomo, czy słowo już w nim jest. */
+  canSave: boolean;
   /** Usunąć można tylko słówko bez postępów w powtórkach. */
   canUnsave: boolean;
   unsave: () => void;
@@ -34,7 +36,7 @@ export function useSelectedWord(
   selection: Selection | null,
 ): SelectedWord | null {
   const { settings } = useSettings();
-  const { words, saveWord, removeWord } = useWords();
+  const { words, loading: wordsLoading, createWord, removeWord } = useWords();
   const navigate = useNavigate();
   const [attempt, setAttempt] = useState(0);
 
@@ -80,24 +82,23 @@ export function useSelectedWord(
   );
   const translation = useTranslation(request, attempt);
 
-  const persist = useCallback(async (): Promise<string | null> => {
+  /** Zwraca zapisane (albo istniejące) słówko — świeże przekazujemy dalej, zanim dotrze migawka. */
+  const persist = useCallback(async (): Promise<Word | null> => {
     if (!info) return null;
-    if (existing) return existing.id;
-    const id = await wordIdFor(info.term, book.lang);
-    saveWord(
-      createWord({
-        id,
-        term: info.term,
-        lang: book.lang,
-        sentence: sentenceText(info.context).trim(),
-        book,
-        page,
-        translation: translation.status === 'ready' ? translation.result : null,
-        now: Date.now(),
-      }),
-    );
-    return id;
-  }, [info, existing, book, page, translation, saveWord]);
+    if (existing) return existing;
+    const word = buildWord({
+      id: await wordIdFor(info.term, book.lang),
+      term: info.term,
+      lang: book.lang,
+      sentence: sentenceText(info.context).trim(),
+      book,
+      page,
+      translation: translation.status === 'ready' ? translation.result : null,
+      now: Date.now(),
+    });
+    createWord(word);
+    return word;
+  }, [info, existing, book, page, translation, createWord]);
 
   if (!info || !selection) return null;
 
@@ -123,13 +124,14 @@ export function useSelectedWord(
     save: () => {
       void persist();
     },
+    canSave: !wordsLoading,
     canUnsave: existing !== null && existing.srs.reps === 0,
     unsave: () => {
       if (existing?.srs.reps === 0) removeWord(existing.id);
     },
     openCard: () => {
-      void persist().then((id) => {
-        if (id) void navigate(`/slownik/${id}`);
+      void persist().then((word) => {
+        if (word) void navigate(`/slownik/${word.id}`, { state: { word } });
       });
     },
   };

@@ -1,5 +1,3 @@
-const KEEP_DAYS = 400;
-
 /** Klucz dnia w czasie lokalnym (RRRR-MM-DD). */
 export function dayKey(date: Date): string {
   const y = date.getFullYear();
@@ -29,9 +27,4 @@ export function computeStreak(days: readonly string[], today: string): Streak {
     cursor = previousDay(cursor);
   }
   return { count, doneToday };
-}
-
-export function withDay(days: readonly string[], today: string): string[] {
-  if (days.includes(today)) return [...days];
-  return [...days, today].sort().slice(-KEEP_DAYS);
 }

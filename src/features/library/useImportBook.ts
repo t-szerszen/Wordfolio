@@ -5,7 +5,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { importBook, type ImportResult } from './importBook';
 
 export function useImportBook() {
-  const { books, saveBook } = useBooks();
+  const { books, createBook } = useBooks();
   const { settings } = useSettings();
   const [busy, setBusy] = useState(false);
 
@@ -14,7 +14,7 @@ export function useImportBook() {
       setBusy(true);
       try {
         const result = await importBook(file, books, settings, expectedId);
-        if (result.kind === 'added') saveBook(result.book);
+        if (result.kind === 'added') createBook(result.book);
         if (result.kind !== 'error') await refreshLocalFiles();
         return result;
       } catch {
@@ -23,7 +23,7 @@ export function useImportBook() {
         setBusy(false);
       }
     },
-    [books, settings, saveBook],
+    [books, settings, createBook],
   );
 
   return { importFile, busy };
