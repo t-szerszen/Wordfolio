@@ -20,14 +20,20 @@ describe('zaznaczenie', () => {
 
   it('nie pozwala przesunąć początku za koniec', () => {
     const selection = { paragraph: 0, start: index('out'), end: index('way') };
-    expect(moveEdge(selection, 'start', index('hear'))).toEqual({
+    expect(moveEdge(tokens, selection, 'start', index('hear'))).toEqual({
       ...selection,
       start: selection.end,
     });
-    expect(moveEdge(selection, 'end', index('Alice'))).toEqual({
+    expect(moveEdge(tokens, selection, 'end', index('Alice'))).toEqual({
       ...selection,
       end: selection.start,
     });
-    expect(moveEdge(selection, 'start', index('much')).start).toBe(index('much'));
+    expect(moveEdge(tokens, selection, 'start', index('much')).start).toBe(index('much'));
+  });
+
+  it('nie pozwala rozciągnąć wyrażenia ponad 8 słów', () => {
+    const selection = { paragraph: 0, start: index('nor'), end: index('nor') };
+    expect(moveEdge(tokens, selection, 'end', index('way'))).toEqual(selection);
+    expect(moveEdge(tokens, selection, 'end', index('very')).end).toBe(index('very'));
   });
 });

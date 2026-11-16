@@ -98,7 +98,11 @@ export function useReaderInteractions(
 
     const onPointerMove = (event: PointerEvent) => {
       if (!dragEdge) return;
-      const target = tokenOf(document.elementFromPoint(event.clientX, event.clientY));
+      // Powiększone pole uchwytu leży nad sąsiednimi słowami — pomijamy je przy szukaniu słowa pod palcem.
+      const under = document
+        .elementsFromPoint(event.clientX, event.clientY)
+        .find((element) => !element.closest('[data-handle]'));
+      const target = tokenOf(under ?? null);
       if (target) latest.current.onEdge(dragEdge, target);
     };
 
